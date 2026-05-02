@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option go_package = "github.com/ThuraMinThein/cinema_booking_system";
+
+service BookingService {
+    rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse) {}
+    rpc GetBookings(GetBookingRequest) returns (GetBookingResponse) {}
+}
+
+message Booking {
+    int32   ID = 1;
+    int32   SeatID = 2;
+    int32   UserID = 3;
+    int32   MovieID = 4;
+    string  Status = 5;
+}
+
+message CreateBookingRequest {
+    int32 userID = 1;
+    int32 movieID = 2;
+    int32 seatID = 3;
+}
+
+message CreateBookingResponse {
+    string status = 1;
+}
+
+message GetBookingRequest {
+    int32 userID = 1;
+}
+
+message GetBookingResponse {
+    repeated Booking bookings = 1;
+}
