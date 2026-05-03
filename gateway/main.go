@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	pb "github.com/ThuraMinThein/common/api"
 	"github.com/ThuraMinThein/gateway/config"
 	"github.com/ThuraMinThein/gateway/middlewares"
 	"github.com/gin-contrib/cors"
@@ -16,12 +17,24 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/unrolled/secure"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
 	setupLogger()
 
 	config.LoadConfig()
+
+	bookingsConn, err := grpc.NewClient(config.Config.BookingsServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logrus.Fatalf("Failed to create gRPC client: %v", err)
+	}
+
+	defer bookingsConn.Close()
+	logrus.WithField("port", config.Config.BookingsServiceAddress).Info("Connected to gRPC bookings service")
+
+	bc := pb.NewBookingServiceClient(bookingsConn)
 
 	r := gin.New()
 	r.Use(gin.Recovery())
@@ -58,7 +71,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	handler := NewHandler()
+	handler := NewHandler(bc)
 	handler.registerRoutes(r)
 
 	startServer(r)

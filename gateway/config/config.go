@@ -7,10 +7,13 @@ import (
 )
 
 type AppConfig struct {
-	ServerPort  string
-	Environment string
-	GinMode     string
-	Domain      string
+	ServerPort             string
+	UsersServiceAddress    string
+	BookingsServiceAddress string
+	SeatsServiceAddress    string
+	Environment            string
+	GinMode                string
+	Domain                 string
 }
 
 var Config *AppConfig
@@ -22,10 +25,13 @@ func LoadConfig() {
 	}
 
 	Config = &AppConfig{
-		ServerPort:  os.Getenv("PORT"),
-		Environment: os.Getenv("ENVIRONMENT"),
-		GinMode:     os.Getenv("GIN_MODE"),
-		Domain:      os.Getenv("DOMAIN"),
+		ServerPort:             os.Getenv("PORT"),
+		Environment:            os.Getenv("ENVIRONMENT"),
+		GinMode:                os.Getenv("GIN_MODE"),
+		Domain:                 os.Getenv("DOMAIN"),
+		UsersServiceAddress:    os.Getenv("USERS_SERVICE_ADDRESS"),
+		BookingsServiceAddress: os.Getenv("BOOKINGS_SERVICE_ADDRESS"),
+		SeatsServiceAddress:    os.Getenv("SEATS_SERVICE_ADDRESS"),
 	}
 
 }

@@ -1,12 +1,18 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	pb "github.com/ThuraMinThein/common/api"
+	"github.com/gin-gonic/gin"
+)
 
 type handler struct {
+	bookingClient pb.BookingServiceClient
 }
 
-func NewHandler() *handler {
-	return &handler{}
+func NewHandler(bookingClient pb.BookingServiceClient) *handler {
+	return &handler{
+		bookingClient: bookingClient,
+	}
 }
 
 func (h *handler) registerRoutes(r *gin.Engine) {
@@ -24,7 +30,6 @@ func (h *handler) registerRoutes(r *gin.Engine) {
 }
 
 func (h *handler) HandleCreateUser(c *gin.Context) {
-
 }
 
 func (h *handler) HandleCreateBooking(c *gin.Context) {
