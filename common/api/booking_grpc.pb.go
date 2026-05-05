@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -292,6 +293,146 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginUser",
 			Handler:    _UserService_LoginUser_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/booking.proto",
+}
+
+const (
+	SeatsService_SetSeats_FullMethodName = "/api.v1.SeatsService/SetSeats"
+	SeatsService_GetSeats_FullMethodName = "/api.v1.SeatsService/GetSeats"
+)
+
+// SeatsServiceClient is the client API for SeatsService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type SeatsServiceClient interface {
+	SetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SetSeatsResponse, error)
+	GetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSeatsResponse, error)
+}
+
+type seatsServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewSeatsServiceClient(cc grpc.ClientConnInterface) SeatsServiceClient {
+	return &seatsServiceClient{cc}
+}
+
+func (c *seatsServiceClient) SetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SetSeatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SetSeatsResponse)
+	err := c.cc.Invoke(ctx, SeatsService_SetSeats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *seatsServiceClient) GetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSeatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSeatsResponse)
+	err := c.cc.Invoke(ctx, SeatsService_GetSeats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// SeatsServiceServer is the server API for SeatsService service.
+// All implementations must embed UnimplementedSeatsServiceServer
+// for forward compatibility.
+type SeatsServiceServer interface {
+	SetSeats(context.Context, *emptypb.Empty) (*SetSeatsResponse, error)
+	GetSeats(context.Context, *emptypb.Empty) (*GetSeatsResponse, error)
+	mustEmbedUnimplementedSeatsServiceServer()
+}
+
+// UnimplementedSeatsServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedSeatsServiceServer struct{}
+
+func (UnimplementedSeatsServiceServer) SetSeats(context.Context, *emptypb.Empty) (*SetSeatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetSeats not implemented")
+}
+func (UnimplementedSeatsServiceServer) GetSeats(context.Context, *emptypb.Empty) (*GetSeatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSeats not implemented")
+}
+func (UnimplementedSeatsServiceServer) mustEmbedUnimplementedSeatsServiceServer() {}
+func (UnimplementedSeatsServiceServer) testEmbeddedByValue()                      {}
+
+// UnsafeSeatsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SeatsServiceServer will
+// result in compilation errors.
+type UnsafeSeatsServiceServer interface {
+	mustEmbedUnimplementedSeatsServiceServer()
+}
+
+func RegisterSeatsServiceServer(s grpc.ServiceRegistrar, srv SeatsServiceServer) {
+	// If the following call panics, it indicates UnimplementedSeatsServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&SeatsService_ServiceDesc, srv)
+}
+
+func _SeatsService_SetSeats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SeatsServiceServer).SetSeats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SeatsService_SetSeats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SeatsServiceServer).SetSeats(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SeatsService_GetSeats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SeatsServiceServer).GetSeats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SeatsService_GetSeats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SeatsServiceServer).GetSeats(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// SeatsService_ServiceDesc is the grpc.ServiceDesc for SeatsService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var SeatsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "api.v1.SeatsService",
+	HandlerType: (*SeatsServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "SetSeats",
+			Handler:    _SeatsService_SetSeats_Handler,
+		},
+		{
+			MethodName: "GetSeats",
+			Handler:    _SeatsService_GetSeats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
