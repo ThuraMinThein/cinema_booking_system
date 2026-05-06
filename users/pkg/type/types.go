@@ -1,16 +1,16 @@
 package types
 
 import (
-	"context"
-
 	"github.com/ThuraMinThein/common/api"
+	"github.com/ThuraMinThein/users/internal/model"
 )
 
 type UsersService interface {
-	CreateUser(context.Context, *api.CreateUserRequest) error
-	LoginUser(context.Context) error
+	CreateUser(*model.User) error
+	LoginUser(*api.LoginUserRequest) error
 }
 
 type UsersRepository interface {
-	Create(context.Context) error
+	Create(*model.User) error
+	FindByEmail(string) (*model.User, error)
 }

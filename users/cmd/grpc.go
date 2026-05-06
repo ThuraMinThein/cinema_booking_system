@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 
+	"github.com/ThuraMinThein/users/database"
 	"github.com/ThuraMinThein/users/internal/handler"
 	"github.com/ThuraMinThein/users/internal/repository"
 	"github.com/ThuraMinThein/users/internal/service"
@@ -27,7 +28,7 @@ func (s *grpcServer) Run() error {
 	grpcServer := grpc.NewServer()
 
 	// register the service
-	repository := repository.NewRepository()
+	repository := repository.NewRepository(database.DB)
 	svc := service.NewService(repository)
 	handler.NewGRPCUsersService(grpcServer, svc)
 

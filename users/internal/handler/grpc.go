@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ThuraMinThein/common/api"
+	"github.com/ThuraMinThein/users/internal/model"
 	types "github.com/ThuraMinThein/users/pkg/type"
 	"google.golang.org/grpc"
 )
@@ -21,15 +22,23 @@ func NewGRPCUsersService(grpc *grpc.Server, userService types.UsersService) {
 }
 
 func (h *grpcHandler) CreateUser(ctx context.Context, request *api.CreateUserRequest) (*api.CreateUserResponse, error) {
-	err := h.userService.CreateUser(ctx, request)
+
+	userModel := &model.User{
+		Name:     request.Name,
+		Email:    request.Email,
+		Password: request.Password,
+	}
+	err := h.userService.CreateUser(userModel)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.CreateUserResponse{}, nil
+	return &api.CreateUserResponse{
+		Status: "created",
+	}, nil
 }
 func (h *grpcHandler) LoginUser(ctx context.Context, request *api.LoginUserRequest) (*api.LoginUserResponse, error) {
-	err := h.userService.LoginUser(ctx)
+	err := h.userService.LoginUser(request)
 	if err != nil {
 		return nil, err
 	}

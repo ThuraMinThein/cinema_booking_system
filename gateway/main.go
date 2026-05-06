@@ -26,6 +26,16 @@ func main() {
 
 	config.LoadConfig()
 
+	usersConn, err := grpc.NewClient(config.Config.UsersServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logrus.Fatalf("Failed to create gRPC client: %v", err)
+	}
+
+	defer usersConn.Close()
+	logrus.WithField("port", config.Config.UsersServiceAddress).Info("Connected to gRPC users service")
+
+	uc := pb.NewUserServiceClient(usersConn)
+
 	bookingsConn, err := grpc.NewClient(config.Config.BookingsServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Fatalf("Failed to create gRPC client: %v", err)
@@ -71,7 +81,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	handler := NewHandler(bc)
+	handler := NewHandler(uc, bc)
 	handler.registerRoutes(r)
 
 	startServer(r)
