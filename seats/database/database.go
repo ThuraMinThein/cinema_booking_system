@@ -1,0 +1,38 @@
+package database
+
+import (
+	"fmt"
+
+	"github.com/ThuraMinThein/seats/config"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+var DB *gorm.DB
+
+func DatabaseInit() error {
+	config := config.Config
+	sslMode := "require"
+	if config.Environment == "development" {
+		sslMode = "disable"
+	}
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		config.DBHost,
+		config.DBUser,
+		config.DBPassword,
+		config.DBName,
+		config.DBPort,
+		sslMode,
+	)
+
+	var err error
+
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

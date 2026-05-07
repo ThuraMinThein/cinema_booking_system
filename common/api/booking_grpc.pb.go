@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,16 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BookingService_CreateBooking_FullMethodName = "/api.v1.BookingService/CreateBooking"
-	BookingService_GetBookings_FullMethodName   = "/api.v1.BookingService/GetBookings"
+	BookingService_Create_FullMethodName          = "/api.v1.BookingService/Create"
+	BookingService_FindAll_FullMethodName         = "/api.v1.BookingService/FindAll"
+	BookingService_IsSeatAvailable_FullMethodName = "/api.v1.BookingService/IsSeatAvailable"
+	BookingService_Update_FullMethodName          = "/api.v1.BookingService/Update"
+	BookingService_Cancel_FullMethodName          = "/api.v1.BookingService/Cancel"
 )
 
 // BookingServiceClient is the client API for BookingService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BookingServiceClient interface {
-	CreateBooking(ctx context.Context, in *CreateBookingRequest, opts ...grpc.CallOption) (*CreateBookingResponse, error)
-	GetBookings(ctx context.Context, in *GetBookingsRequest, opts ...grpc.CallOption) (*GetBookingsResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*FindAllResponse, error)
+	IsSeatAvailable(ctx context.Context, in *IsSeatAvailableRequest, opts ...grpc.CallOption) (*IsSeatAvailableResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
+	Cancel(ctx context.Context, in *CancelRequest, opts ...grpc.CallOption) (*CancelResponse, error)
 }
 
 type bookingServiceClient struct {
@@ -40,20 +45,50 @@ func NewBookingServiceClient(cc grpc.ClientConnInterface) BookingServiceClient {
 	return &bookingServiceClient{cc}
 }
 
-func (c *bookingServiceClient) CreateBooking(ctx context.Context, in *CreateBookingRequest, opts ...grpc.CallOption) (*CreateBookingResponse, error) {
+func (c *bookingServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreateBookingResponse)
-	err := c.cc.Invoke(ctx, BookingService_CreateBooking_FullMethodName, in, out, cOpts...)
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, BookingService_Create_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bookingServiceClient) GetBookings(ctx context.Context, in *GetBookingsRequest, opts ...grpc.CallOption) (*GetBookingsResponse, error) {
+func (c *bookingServiceClient) FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*FindAllResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetBookingsResponse)
-	err := c.cc.Invoke(ctx, BookingService_GetBookings_FullMethodName, in, out, cOpts...)
+	out := new(FindAllResponse)
+	err := c.cc.Invoke(ctx, BookingService_FindAll_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookingServiceClient) IsSeatAvailable(ctx context.Context, in *IsSeatAvailableRequest, opts ...grpc.CallOption) (*IsSeatAvailableResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IsSeatAvailableResponse)
+	err := c.cc.Invoke(ctx, BookingService_IsSeatAvailable_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookingServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateResponse)
+	err := c.cc.Invoke(ctx, BookingService_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookingServiceClient) Cancel(ctx context.Context, in *CancelRequest, opts ...grpc.CallOption) (*CancelResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CancelResponse)
+	err := c.cc.Invoke(ctx, BookingService_Cancel_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +99,11 @@ func (c *bookingServiceClient) GetBookings(ctx context.Context, in *GetBookingsR
 // All implementations must embed UnimplementedBookingServiceServer
 // for forward compatibility.
 type BookingServiceServer interface {
-	CreateBooking(context.Context, *CreateBookingRequest) (*CreateBookingResponse, error)
-	GetBookings(context.Context, *GetBookingsRequest) (*GetBookingsResponse, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	FindAll(context.Context, *FindAllRequest) (*FindAllResponse, error)
+	IsSeatAvailable(context.Context, *IsSeatAvailableRequest) (*IsSeatAvailableResponse, error)
+	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
+	Cancel(context.Context, *CancelRequest) (*CancelResponse, error)
 	mustEmbedUnimplementedBookingServiceServer()
 }
 
@@ -76,11 +114,20 @@ type BookingServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedBookingServiceServer struct{}
 
-func (UnimplementedBookingServiceServer) CreateBooking(context.Context, *CreateBookingRequest) (*CreateBookingResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateBooking not implemented")
+func (UnimplementedBookingServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedBookingServiceServer) GetBookings(context.Context, *GetBookingsRequest) (*GetBookingsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetBookings not implemented")
+func (UnimplementedBookingServiceServer) FindAll(context.Context, *FindAllRequest) (*FindAllResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method FindAll not implemented")
+}
+func (UnimplementedBookingServiceServer) IsSeatAvailable(context.Context, *IsSeatAvailableRequest) (*IsSeatAvailableResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method IsSeatAvailable not implemented")
+}
+func (UnimplementedBookingServiceServer) Update(context.Context, *UpdateRequest) (*UpdateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedBookingServiceServer) Cancel(context.Context, *CancelRequest) (*CancelResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Cancel not implemented")
 }
 func (UnimplementedBookingServiceServer) mustEmbedUnimplementedBookingServiceServer() {}
 func (UnimplementedBookingServiceServer) testEmbeddedByValue()                        {}
@@ -103,38 +150,92 @@ func RegisterBookingServiceServer(s grpc.ServiceRegistrar, srv BookingServiceSer
 	s.RegisterService(&BookingService_ServiceDesc, srv)
 }
 
-func _BookingService_CreateBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateBookingRequest)
+func _BookingService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BookingServiceServer).CreateBooking(ctx, in)
+		return srv.(BookingServiceServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BookingService_CreateBooking_FullMethodName,
+		FullMethod: BookingService_Create_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).CreateBooking(ctx, req.(*CreateBookingRequest))
+		return srv.(BookingServiceServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BookingService_GetBookings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetBookingsRequest)
+func _BookingService_FindAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindAllRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BookingServiceServer).GetBookings(ctx, in)
+		return srv.(BookingServiceServer).FindAll(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BookingService_GetBookings_FullMethodName,
+		FullMethod: BookingService_FindAll_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BookingServiceServer).GetBookings(ctx, req.(*GetBookingsRequest))
+		return srv.(BookingServiceServer).FindAll(ctx, req.(*FindAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookingService_IsSeatAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsSeatAvailableRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).IsSeatAvailable(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookingService_IsSeatAvailable_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).IsSeatAvailable(ctx, req.(*IsSeatAvailableRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookingService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookingService_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).Update(ctx, req.(*UpdateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookingService_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).Cancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookingService_Cancel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).Cancel(ctx, req.(*CancelRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -147,12 +248,24 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BookingServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateBooking",
-			Handler:    _BookingService_CreateBooking_Handler,
+			MethodName: "Create",
+			Handler:    _BookingService_Create_Handler,
 		},
 		{
-			MethodName: "GetBookings",
-			Handler:    _BookingService_GetBookings_Handler,
+			MethodName: "FindAll",
+			Handler:    _BookingService_FindAll_Handler,
+		},
+		{
+			MethodName: "IsSeatAvailable",
+			Handler:    _BookingService_IsSeatAvailable_Handler,
+		},
+		{
+			MethodName: "Update",
+			Handler:    _BookingService_Update_Handler,
+		},
+		{
+			MethodName: "Cancel",
+			Handler:    _BookingService_Cancel_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -308,8 +421,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SeatsServiceClient interface {
-	SetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SetSeatsResponse, error)
-	GetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSeatsResponse, error)
+	SetSeats(ctx context.Context, in *SetSeatsRequest, opts ...grpc.CallOption) (*SetSeatsResponse, error)
+	GetSeats(ctx context.Context, in *GetSeatsRequest, opts ...grpc.CallOption) (*GetSeatsResponse, error)
 }
 
 type seatsServiceClient struct {
@@ -320,7 +433,7 @@ func NewSeatsServiceClient(cc grpc.ClientConnInterface) SeatsServiceClient {
 	return &seatsServiceClient{cc}
 }
 
-func (c *seatsServiceClient) SetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*SetSeatsResponse, error) {
+func (c *seatsServiceClient) SetSeats(ctx context.Context, in *SetSeatsRequest, opts ...grpc.CallOption) (*SetSeatsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SetSeatsResponse)
 	err := c.cc.Invoke(ctx, SeatsService_SetSeats_FullMethodName, in, out, cOpts...)
@@ -330,7 +443,7 @@ func (c *seatsServiceClient) SetSeats(ctx context.Context, in *emptypb.Empty, op
 	return out, nil
 }
 
-func (c *seatsServiceClient) GetSeats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSeatsResponse, error) {
+func (c *seatsServiceClient) GetSeats(ctx context.Context, in *GetSeatsRequest, opts ...grpc.CallOption) (*GetSeatsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetSeatsResponse)
 	err := c.cc.Invoke(ctx, SeatsService_GetSeats_FullMethodName, in, out, cOpts...)
@@ -344,8 +457,8 @@ func (c *seatsServiceClient) GetSeats(ctx context.Context, in *emptypb.Empty, op
 // All implementations must embed UnimplementedSeatsServiceServer
 // for forward compatibility.
 type SeatsServiceServer interface {
-	SetSeats(context.Context, *emptypb.Empty) (*SetSeatsResponse, error)
-	GetSeats(context.Context, *emptypb.Empty) (*GetSeatsResponse, error)
+	SetSeats(context.Context, *SetSeatsRequest) (*SetSeatsResponse, error)
+	GetSeats(context.Context, *GetSeatsRequest) (*GetSeatsResponse, error)
 	mustEmbedUnimplementedSeatsServiceServer()
 }
 
@@ -356,10 +469,10 @@ type SeatsServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSeatsServiceServer struct{}
 
-func (UnimplementedSeatsServiceServer) SetSeats(context.Context, *emptypb.Empty) (*SetSeatsResponse, error) {
+func (UnimplementedSeatsServiceServer) SetSeats(context.Context, *SetSeatsRequest) (*SetSeatsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SetSeats not implemented")
 }
-func (UnimplementedSeatsServiceServer) GetSeats(context.Context, *emptypb.Empty) (*GetSeatsResponse, error) {
+func (UnimplementedSeatsServiceServer) GetSeats(context.Context, *GetSeatsRequest) (*GetSeatsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSeats not implemented")
 }
 func (UnimplementedSeatsServiceServer) mustEmbedUnimplementedSeatsServiceServer() {}
@@ -384,7 +497,7 @@ func RegisterSeatsServiceServer(s grpc.ServiceRegistrar, srv SeatsServiceServer)
 }
 
 func _SeatsService_SetSeats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(SetSeatsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -396,13 +509,13 @@ func _SeatsService_SetSeats_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: SeatsService_SetSeats_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SeatsServiceServer).SetSeats(ctx, req.(*emptypb.Empty))
+		return srv.(SeatsServiceServer).SetSeats(ctx, req.(*SetSeatsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _SeatsService_GetSeats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetSeatsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -414,7 +527,7 @@ func _SeatsService_GetSeats_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: SeatsService_GetSeats_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SeatsServiceServer).GetSeats(ctx, req.(*emptypb.Empty))
+		return srv.(SeatsServiceServer).GetSeats(ctx, req.(*GetSeatsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
