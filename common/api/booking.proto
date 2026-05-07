@@ -3,7 +3,6 @@ syntax = "proto3";
 option go_package = "github.com/ThuraMinThein/commons/api";
 
 package api.v1;
-import "google/protobuf/empty.proto";
 
 service BookingService { 
     rpc Create(CreateRequest) returns (CreateResponse) {}
@@ -100,6 +99,7 @@ message LoginUserResponse {
 service SeatsService {
     rpc SetSeats(SetSeatsRequest) returns (SetSeatsResponse) {}
     rpc GetSeats(GetSeatsRequest) returns (GetSeatsResponse) {}
+    rpc DeleteSeat(DeleteSeatRequest) returns (DeleteSeatResponse) {}
 }
 
 message Seat {
@@ -127,4 +127,12 @@ message SetSeatsResponse {
 
 message GetSeatsResponse {
     repeated Seat seats = 1;
+}
+
+message DeleteSeatRequest {
+    int32 seat_id = 1;
+}
+
+message DeleteSeatResponse {
+    string message = 1;
 }

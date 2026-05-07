@@ -413,8 +413,9 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	SeatsService_SetSeats_FullMethodName = "/api.v1.SeatsService/SetSeats"
-	SeatsService_GetSeats_FullMethodName = "/api.v1.SeatsService/GetSeats"
+	SeatsService_SetSeats_FullMethodName   = "/api.v1.SeatsService/SetSeats"
+	SeatsService_GetSeats_FullMethodName   = "/api.v1.SeatsService/GetSeats"
+	SeatsService_DeleteSeat_FullMethodName = "/api.v1.SeatsService/DeleteSeat"
 )
 
 // SeatsServiceClient is the client API for SeatsService service.
@@ -423,6 +424,7 @@ const (
 type SeatsServiceClient interface {
 	SetSeats(ctx context.Context, in *SetSeatsRequest, opts ...grpc.CallOption) (*SetSeatsResponse, error)
 	GetSeats(ctx context.Context, in *GetSeatsRequest, opts ...grpc.CallOption) (*GetSeatsResponse, error)
+	DeleteSeat(ctx context.Context, in *DeleteSeatRequest, opts ...grpc.CallOption) (*DeleteSeatResponse, error)
 }
 
 type seatsServiceClient struct {
@@ -453,12 +455,23 @@ func (c *seatsServiceClient) GetSeats(ctx context.Context, in *GetSeatsRequest, 
 	return out, nil
 }
 
+func (c *seatsServiceClient) DeleteSeat(ctx context.Context, in *DeleteSeatRequest, opts ...grpc.CallOption) (*DeleteSeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteSeatResponse)
+	err := c.cc.Invoke(ctx, SeatsService_DeleteSeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SeatsServiceServer is the server API for SeatsService service.
 // All implementations must embed UnimplementedSeatsServiceServer
 // for forward compatibility.
 type SeatsServiceServer interface {
 	SetSeats(context.Context, *SetSeatsRequest) (*SetSeatsResponse, error)
 	GetSeats(context.Context, *GetSeatsRequest) (*GetSeatsResponse, error)
+	DeleteSeat(context.Context, *DeleteSeatRequest) (*DeleteSeatResponse, error)
 	mustEmbedUnimplementedSeatsServiceServer()
 }
 
@@ -474,6 +487,9 @@ func (UnimplementedSeatsServiceServer) SetSeats(context.Context, *SetSeatsReques
 }
 func (UnimplementedSeatsServiceServer) GetSeats(context.Context, *GetSeatsRequest) (*GetSeatsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSeats not implemented")
+}
+func (UnimplementedSeatsServiceServer) DeleteSeat(context.Context, *DeleteSeatRequest) (*DeleteSeatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteSeat not implemented")
 }
 func (UnimplementedSeatsServiceServer) mustEmbedUnimplementedSeatsServiceServer() {}
 func (UnimplementedSeatsServiceServer) testEmbeddedByValue()                      {}
@@ -532,6 +548,24 @@ func _SeatsService_GetSeats_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SeatsService_DeleteSeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SeatsServiceServer).DeleteSeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SeatsService_DeleteSeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SeatsServiceServer).DeleteSeat(ctx, req.(*DeleteSeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SeatsService_ServiceDesc is the grpc.ServiceDesc for SeatsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -546,6 +580,10 @@ var SeatsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSeats",
 			Handler:    _SeatsService_GetSeats_Handler,
+		},
+		{
+			MethodName: "DeleteSeat",
+			Handler:    _SeatsService_DeleteSeat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

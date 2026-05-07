@@ -9,7 +9,6 @@ package api
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -1134,11 +1133,99 @@ func (x *GetSeatsResponse) GetSeats() []*Seat {
 	return nil
 }
 
+type DeleteSeatRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SeatId        int32                  `protobuf:"varint,1,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSeatRequest) Reset() {
+	*x = DeleteSeatRequest{}
+	mi := &file_api_booking_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSeatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSeatRequest) ProtoMessage() {}
+
+func (x *DeleteSeatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_booking_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSeatRequest.ProtoReflect.Descriptor instead.
+func (*DeleteSeatRequest) Descriptor() ([]byte, []int) {
+	return file_api_booking_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *DeleteSeatRequest) GetSeatId() int32 {
+	if x != nil {
+		return x.SeatId
+	}
+	return 0
+}
+
+type DeleteSeatResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteSeatResponse) Reset() {
+	*x = DeleteSeatResponse{}
+	mi := &file_api_booking_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteSeatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteSeatResponse) ProtoMessage() {}
+
+func (x *DeleteSeatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_booking_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteSeatResponse.ProtoReflect.Descriptor instead.
+func (*DeleteSeatResponse) Descriptor() ([]byte, []int) {
+	return file_api_booking_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *DeleteSeatResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_api_booking_proto protoreflect.FileDescriptor
 
 const file_api_booking_proto_rawDesc = "" +
 	"\n" +
-	"\x11api/booking.proto\x12\x06api.v1\x1a\x1bgoogle/protobuf/empty.proto\"~\n" +
+	"\x11api/booking.proto\x12\x06api.v1\"~\n" +
 	"\aBooking\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x17\n" +
 	"\aseat_id\x18\x02 \x01(\x05R\x06seatId\x12\x17\n" +
@@ -1200,7 +1287,11 @@ const file_api_booking_proto_rawDesc = "" +
 	"\x10SetSeatsResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"6\n" +
 	"\x10GetSeatsResponse\x12\"\n" +
-	"\x05seats\x18\x01 \x03(\v2\f.api.v1.SeatR\x05seats*_\n" +
+	"\x05seats\x18\x01 \x03(\v2\f.api.v1.SeatR\x05seats\",\n" +
+	"\x11DeleteSeatRequest\x12\x17\n" +
+	"\aseat_id\x18\x01 \x01(\x05R\x06seatId\".\n" +
+	"\x12DeleteSeatResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage*_\n" +
 	"\x06Status\x12\x1b\n" +
 	"\x17STATUS_SEAT_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10STATUS_AVAILABLE\x10\x01\x12\x0f\n" +
@@ -1215,10 +1306,12 @@ const file_api_booking_proto_rawDesc = "" +
 	"\vUserService\x12E\n" +
 	"\n" +
 	"CreateUser\x12\x19.api.v1.CreateUserRequest\x1a\x1a.api.v1.CreateUserResponse\"\x00\x12B\n" +
-	"\tLoginUser\x12\x18.api.v1.LoginUserRequest\x1a\x19.api.v1.LoginUserResponse\"\x002\x90\x01\n" +
+	"\tLoginUser\x12\x18.api.v1.LoginUserRequest\x1a\x19.api.v1.LoginUserResponse\"\x002\xd7\x01\n" +
 	"\fSeatsService\x12?\n" +
 	"\bSetSeats\x12\x17.api.v1.SetSeatsRequest\x1a\x18.api.v1.SetSeatsResponse\"\x00\x12?\n" +
-	"\bGetSeats\x12\x17.api.v1.GetSeatsRequest\x1a\x18.api.v1.GetSeatsResponse\"\x00B&Z$github.com/ThuraMinThein/commons/apib\x06proto3"
+	"\bGetSeats\x12\x17.api.v1.GetSeatsRequest\x1a\x18.api.v1.GetSeatsResponse\"\x00\x12E\n" +
+	"\n" +
+	"DeleteSeat\x12\x19.api.v1.DeleteSeatRequest\x1a\x1a.api.v1.DeleteSeatResponse\"\x00B&Z$github.com/ThuraMinThein/commons/apib\x06proto3"
 
 var (
 	file_api_booking_proto_rawDescOnce sync.Once
@@ -1233,7 +1326,7 @@ func file_api_booking_proto_rawDescGZIP() []byte {
 }
 
 var file_api_booking_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_api_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_api_booking_proto_goTypes = []any{
 	(Status)(0),                     // 0: api.v1.Status
 	(*Booking)(nil),                 // 1: api.v1.Booking
@@ -1257,6 +1350,8 @@ var file_api_booking_proto_goTypes = []any{
 	(*GetSeatsRequest)(nil),         // 19: api.v1.GetSeatsRequest
 	(*SetSeatsResponse)(nil),        // 20: api.v1.SetSeatsResponse
 	(*GetSeatsResponse)(nil),        // 21: api.v1.GetSeatsResponse
+	(*DeleteSeatRequest)(nil),       // 22: api.v1.DeleteSeatRequest
+	(*DeleteSeatResponse)(nil),      // 23: api.v1.DeleteSeatResponse
 }
 var file_api_booking_proto_depIdxs = []int32{
 	1,  // 0: api.v1.FindAllResponse.bookings:type_name -> api.v1.Booking
@@ -1271,17 +1366,19 @@ var file_api_booking_proto_depIdxs = []int32{
 	15, // 9: api.v1.UserService.LoginUser:input_type -> api.v1.LoginUserRequest
 	18, // 10: api.v1.SeatsService.SetSeats:input_type -> api.v1.SetSeatsRequest
 	19, // 11: api.v1.SeatsService.GetSeats:input_type -> api.v1.GetSeatsRequest
-	3,  // 12: api.v1.BookingService.Create:output_type -> api.v1.CreateResponse
-	5,  // 13: api.v1.BookingService.FindAll:output_type -> api.v1.FindAllResponse
-	7,  // 14: api.v1.BookingService.IsSeatAvailable:output_type -> api.v1.IsSeatAvailableResponse
-	9,  // 15: api.v1.BookingService.Update:output_type -> api.v1.UpdateResponse
-	11, // 16: api.v1.BookingService.Cancel:output_type -> api.v1.CancelResponse
-	14, // 17: api.v1.UserService.CreateUser:output_type -> api.v1.CreateUserResponse
-	16, // 18: api.v1.UserService.LoginUser:output_type -> api.v1.LoginUserResponse
-	20, // 19: api.v1.SeatsService.SetSeats:output_type -> api.v1.SetSeatsResponse
-	21, // 20: api.v1.SeatsService.GetSeats:output_type -> api.v1.GetSeatsResponse
-	12, // [12:21] is the sub-list for method output_type
-	3,  // [3:12] is the sub-list for method input_type
+	22, // 12: api.v1.SeatsService.DeleteSeat:input_type -> api.v1.DeleteSeatRequest
+	3,  // 13: api.v1.BookingService.Create:output_type -> api.v1.CreateResponse
+	5,  // 14: api.v1.BookingService.FindAll:output_type -> api.v1.FindAllResponse
+	7,  // 15: api.v1.BookingService.IsSeatAvailable:output_type -> api.v1.IsSeatAvailableResponse
+	9,  // 16: api.v1.BookingService.Update:output_type -> api.v1.UpdateResponse
+	11, // 17: api.v1.BookingService.Cancel:output_type -> api.v1.CancelResponse
+	14, // 18: api.v1.UserService.CreateUser:output_type -> api.v1.CreateUserResponse
+	16, // 19: api.v1.UserService.LoginUser:output_type -> api.v1.LoginUserResponse
+	20, // 20: api.v1.SeatsService.SetSeats:output_type -> api.v1.SetSeatsResponse
+	21, // 21: api.v1.SeatsService.GetSeats:output_type -> api.v1.GetSeatsResponse
+	23, // 22: api.v1.SeatsService.DeleteSeat:output_type -> api.v1.DeleteSeatResponse
+	13, // [13:23] is the sub-list for method output_type
+	3,  // [3:13] is the sub-list for method input_type
 	3,  // [3:3] is the sub-list for extension type_name
 	3,  // [3:3] is the sub-list for extension extendee
 	0,  // [0:3] is the sub-list for field type_name
@@ -1298,7 +1395,7 @@ func file_api_booking_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_booking_proto_rawDesc), len(file_api_booking_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   21,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   3,
 		},
