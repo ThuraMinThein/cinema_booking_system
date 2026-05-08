@@ -8,12 +8,14 @@ import (
 type handler struct {
 	userClient    pb.UserServiceClient
 	bookingClient pb.BookingServiceClient
+	seatsClient   pb.SeatsServiceClient
 }
 
-func NewHandler(userClient pb.UserServiceClient, bookingClient pb.BookingServiceClient) *handler {
+func NewHandler(userClient pb.UserServiceClient, bookingClient pb.BookingServiceClient, seatsClient pb.SeatsServiceClient) *handler {
 	return &handler{
 		userClient:    userClient,
 		bookingClient: bookingClient,
+		seatsClient:   seatsClient,
 	}
 }
 

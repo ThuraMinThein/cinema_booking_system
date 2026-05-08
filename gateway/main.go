@@ -46,6 +46,15 @@ func main() {
 
 	bc := pb.NewBookingServiceClient(bookingsConn)
 
+	seatsConn, err := grpc.NewClient(config.Config.SeatsServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logrus.Fatalf("Failed to create gRPC client: %v", err)
+	}
+
+	defer seatsConn.Close()
+	logrus.WithField("port", config.Config.SeatsServiceAddress).Info("Connected to gRPC seats service")
+	sc := pb.NewSeatsServiceClient(seatsConn)
+
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(middlewares.RequestIDMiddleware())
@@ -81,7 +90,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	handler := NewHandler(uc, bc)
+	handler := NewHandler(uc, bc, sc)
 	handler.registerRoutes(r)
 
 	startServer(r)
