@@ -67,10 +67,11 @@ message CancelResponse {
 service UserService {
     rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
     rpc LoginUser(LoginUserRequest) returns (LoginUserResponse) {}
+    rpc GetUserById(GetUserByIdRequest) returns (GetUserByIdResponse) {}
 }
 
 message User {
-    int32 id = 1;
+    string id = 1;
     string name = 2;
     string email = 3;
     string password = 4;
@@ -93,7 +94,15 @@ message LoginUserRequest {
 
 message LoginUserResponse {
     string status = 1;
-    int32 user_id = 2;
+    string user_id = 2;
+}
+
+message GetUserByIdRequest {
+    string user_id = 1;
+}
+
+message GetUserByIdResponse {
+    User user = 1;
 }
 
 service SeatsService {

@@ -31,3 +31,16 @@ func (s *store) FindByEmail(email string) (*model.User, error) {
 	}
 	return user, nil
 }
+
+func (s *store) GetUserById(id string) (*model.User, error) {
+	var user *model.User
+	result := s.db.Find(&user, "id = ?", id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return user, nil
+}

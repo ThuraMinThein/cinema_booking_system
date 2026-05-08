@@ -9,16 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	pb "github.com/ThuraMinThein/common/api"
 	"github.com/ThuraMinThein/gateway/config"
+	"github.com/ThuraMinThein/gateway/grpc_client"
+	"github.com/ThuraMinThein/gateway/handler"
 	"github.com/ThuraMinThein/gateway/middlewares"
+	redis_client "github.com/ThuraMinThein/gateway/pkg/redis"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"github.com/unrolled/secure"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -26,34 +26,11 @@ func main() {
 
 	config.LoadConfig()
 
-	usersConn, err := grpc.NewClient(config.Config.UsersServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		logrus.Fatalf("Failed to create gRPC client: %v", err)
+	if err := redis_client.InitRedis(); err != nil {
+		logrus.Fatal("Database connection failed", err)
 	}
 
-	defer usersConn.Close()
-	logrus.WithField("port", config.Config.UsersServiceAddress).Info("Connected to gRPC users service")
-
-	uc := pb.NewUserServiceClient(usersConn)
-
-	bookingsConn, err := grpc.NewClient(config.Config.BookingsServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		logrus.Fatalf("Failed to create gRPC client: %v", err)
-	}
-
-	defer bookingsConn.Close()
-	logrus.WithField("port", config.Config.BookingsServiceAddress).Info("Connected to gRPC bookings service")
-
-	bc := pb.NewBookingServiceClient(bookingsConn)
-
-	seatsConn, err := grpc.NewClient(config.Config.SeatsServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		logrus.Fatalf("Failed to create gRPC client: %v", err)
-	}
-
-	defer seatsConn.Close()
-	logrus.WithField("port", config.Config.SeatsServiceAddress).Info("Connected to gRPC seats service")
-	sc := pb.NewSeatsServiceClient(seatsConn)
+	grpc_client.InitGrpcClients()
 
 	r := gin.New()
 	r.Use(gin.Recovery())
@@ -90,8 +67,12 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	handler := NewHandler(uc, bc, sc)
-	handler.registerRoutes(r)
+	uc := grpc_client.GetUserClient()
+	bc := grpc_client.GetBookingClient()
+	sc := grpc_client.GetSeatsClient()
+
+	handler := handler.NewHandler(uc, bc, sc)
+	handler.RegisterRoutes(r)
 
 	startServer(r)
 }

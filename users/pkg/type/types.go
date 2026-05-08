@@ -8,9 +8,11 @@ import (
 type UsersService interface {
 	CreateUser(*model.User) error
 	LoginUser(*api.LoginUserRequest) error
+	GetUserById(string) (*model.User, error)
 }
 
 type UsersRepository interface {
 	Create(*model.User) error
 	FindByEmail(string) (*model.User, error)
+	GetUserById(string) (*model.User, error)
 }

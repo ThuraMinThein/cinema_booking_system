@@ -37,6 +37,7 @@ func (h *grpcHandler) CreateUser(ctx context.Context, request *api.CreateUserReq
 		Status: "created",
 	}, nil
 }
+
 func (h *grpcHandler) LoginUser(ctx context.Context, request *api.LoginUserRequest) (*api.LoginUserResponse, error) {
 	err := h.userService.LoginUser(request)
 	if err != nil {
@@ -44,4 +45,19 @@ func (h *grpcHandler) LoginUser(ctx context.Context, request *api.LoginUserReque
 	}
 
 	return &api.LoginUserResponse{}, nil
+}
+
+func (h *grpcHandler) GetUserById(ctx context.Context, request *api.GetUserByIdRequest) (*api.GetUserByIdResponse, error) {
+	user, err := h.userService.GetUserById(request.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.GetUserByIdResponse{
+		User: &api.User{
+			Id:    user.Id,
+			Name:  user.Name,
+			Email: user.Email,
+		},
+	}, nil
 }

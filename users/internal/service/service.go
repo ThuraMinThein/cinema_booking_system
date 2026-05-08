@@ -47,6 +47,10 @@ func (s *user) LoginUser(req *api.LoginUserRequest) error {
 	return nil
 }
 
+func (s *user) GetUserById(id string) (*model.User, error) {
+	return s.repository.GetUserById(id)
+}
+
 // utils
 func (s *user) hasEmail(email string) (bool, error) {
 	if email != "" {
