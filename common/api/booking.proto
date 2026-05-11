@@ -13,17 +13,19 @@ service BookingService {
 }
 
 message Booking {
-    int32   id = 1;
-    int32   seat_id = 2;
-    string   user_id = 3;
-    int32   movie_id = 4;
-    string  status = 5;
+    int64   id = 1;
+    int64   seat_id = 2;
+    string  seat_number = 3;
+    string  user_id = 4;
+    string  user_name = 5;
+    int64   movie_id = 6;
+    string  status = 7;
 }
 
 message CreateRequest {
     string user_id = 1;
-    int32 movie_id = 2;
-    repeated int32 seat_id = 3;
+    int64 movie_id = 2;
+    repeated int64 seat_ids = 3;
 }
 
 message CreateResponse {
@@ -32,6 +34,7 @@ message CreateResponse {
 
 message FindAllRequest {
     string user_id = 1;
+    int64 movie_id = 2;
 }
 
 message FindAllResponse {
@@ -39,8 +42,8 @@ message FindAllResponse {
 }
 
 message IsSeatAvailableRequest {
-    int32 seat_id = 1;
-    int32 movie_id = 2;
+    int64 seat_id = 1;
+    int64 movie_id = 2;
 }
 
 message IsSeatAvailableResponse {
@@ -48,8 +51,8 @@ message IsSeatAvailableResponse {
 }
 
 message UpdateRequest {
-    int32 booking_id = 1;
-    int32 new_seat_id = 2;
+    int64 booking_id = 1;
+    int64 new_seat_id = 2;
 }
 
 message UpdateResponse {
@@ -58,7 +61,7 @@ message UpdateResponse {
 
 message CancelRequest {
     string user_id = 1;
-    int32 booking_id = 2;
+    int64 booking_id = 2;
 }
 
 message CancelResponse {
@@ -110,11 +113,12 @@ message GetUserByIdResponse {
 service SeatsService {
     rpc SetSeats(SetSeatsRequest) returns (SetSeatsResponse) {}
     rpc GetSeats(GetSeatsRequest) returns (GetSeatsResponse) {}
+    rpc GetOneSeat(GetOneSeatRequest) returns (GetOneSeatResponse) {}
     rpc DeleteSeat(DeleteSeatRequest) returns (DeleteSeatResponse) {}
 }
 
 message Seat {
-    int32 id = 1;
+    int64 id = 1;
     string name = 2;
     string row = 3;
     string column = 4;
@@ -130,18 +134,26 @@ enum Status {
 
 message SetSeatsRequest {}
 
-message GetSeatsRequest {}
-
 message SetSeatsResponse {
     string message = 1;
 }
+
+message GetSeatsRequest {}
 
 message GetSeatsResponse {
     repeated Seat seats = 1;
 }
 
+message GetOneSeatRequest {
+    int64 seat_id = 1;
+}
+
+message GetOneSeatResponse {
+    Seat seat = 1;
+}
+
 message DeleteSeatRequest {
-    int32 seat_id = 1;
+    int64 seat_id = 1;
 }
 
 message DeleteSeatResponse {

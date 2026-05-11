@@ -25,6 +25,12 @@ func (r *Repository) FindAll() ([]*model.Seat, error) {
 	return seat, err
 }
 
+func (r *Repository) FindOne(seatId int64) (*model.Seat, error) {
+	var seat *model.Seat
+	err := r.database.First(&seat, seatId).Error
+	return seat, err
+}
+
 func (r *Repository) Delete(seatID int64) error {
 	return r.database.Delete(&model.Seat{}, seatID).Error
 }

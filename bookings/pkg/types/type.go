@@ -1,10 +1,13 @@
 package types
 
-import "github.com/ThuraMinThein/bookings/internal/model"
+import (
+	"github.com/ThuraMinThein/bookings/internal/model"
+	"github.com/ThuraMinThein/common/api"
+)
 
 type BookingService interface {
-	Create(*model.Booking) error
-	FindAll(int64) ([]model.Booking, error)
+	Create(*api.CreateRequest) error
+	FindAll(string, int64) ([]model.Booking, error)
 	IsSeatAvailable(int64, int64) (bool, error)
 	Update(*model.Booking) error
 	Cancel(int64) error

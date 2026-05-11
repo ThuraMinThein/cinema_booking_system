@@ -453,6 +453,7 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 const (
 	SeatsService_SetSeats_FullMethodName   = "/api.v1.SeatsService/SetSeats"
 	SeatsService_GetSeats_FullMethodName   = "/api.v1.SeatsService/GetSeats"
+	SeatsService_GetOneSeat_FullMethodName = "/api.v1.SeatsService/GetOneSeat"
 	SeatsService_DeleteSeat_FullMethodName = "/api.v1.SeatsService/DeleteSeat"
 )
 
@@ -462,6 +463,7 @@ const (
 type SeatsServiceClient interface {
 	SetSeats(ctx context.Context, in *SetSeatsRequest, opts ...grpc.CallOption) (*SetSeatsResponse, error)
 	GetSeats(ctx context.Context, in *GetSeatsRequest, opts ...grpc.CallOption) (*GetSeatsResponse, error)
+	GetOneSeat(ctx context.Context, in *GetOneSeatRequest, opts ...grpc.CallOption) (*GetOneSeatResponse, error)
 	DeleteSeat(ctx context.Context, in *DeleteSeatRequest, opts ...grpc.CallOption) (*DeleteSeatResponse, error)
 }
 
@@ -493,6 +495,16 @@ func (c *seatsServiceClient) GetSeats(ctx context.Context, in *GetSeatsRequest, 
 	return out, nil
 }
 
+func (c *seatsServiceClient) GetOneSeat(ctx context.Context, in *GetOneSeatRequest, opts ...grpc.CallOption) (*GetOneSeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOneSeatResponse)
+	err := c.cc.Invoke(ctx, SeatsService_GetOneSeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *seatsServiceClient) DeleteSeat(ctx context.Context, in *DeleteSeatRequest, opts ...grpc.CallOption) (*DeleteSeatResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteSeatResponse)
@@ -509,6 +521,7 @@ func (c *seatsServiceClient) DeleteSeat(ctx context.Context, in *DeleteSeatReque
 type SeatsServiceServer interface {
 	SetSeats(context.Context, *SetSeatsRequest) (*SetSeatsResponse, error)
 	GetSeats(context.Context, *GetSeatsRequest) (*GetSeatsResponse, error)
+	GetOneSeat(context.Context, *GetOneSeatRequest) (*GetOneSeatResponse, error)
 	DeleteSeat(context.Context, *DeleteSeatRequest) (*DeleteSeatResponse, error)
 	mustEmbedUnimplementedSeatsServiceServer()
 }
@@ -525,6 +538,9 @@ func (UnimplementedSeatsServiceServer) SetSeats(context.Context, *SetSeatsReques
 }
 func (UnimplementedSeatsServiceServer) GetSeats(context.Context, *GetSeatsRequest) (*GetSeatsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSeats not implemented")
+}
+func (UnimplementedSeatsServiceServer) GetOneSeat(context.Context, *GetOneSeatRequest) (*GetOneSeatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetOneSeat not implemented")
 }
 func (UnimplementedSeatsServiceServer) DeleteSeat(context.Context, *DeleteSeatRequest) (*DeleteSeatResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteSeat not implemented")
@@ -586,6 +602,24 @@ func _SeatsService_GetSeats_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SeatsService_GetOneSeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOneSeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SeatsServiceServer).GetOneSeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SeatsService_GetOneSeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SeatsServiceServer).GetOneSeat(ctx, req.(*GetOneSeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SeatsService_DeleteSeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteSeatRequest)
 	if err := dec(in); err != nil {
@@ -618,6 +652,10 @@ var SeatsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSeats",
 			Handler:    _SeatsService_GetSeats_Handler,
+		},
+		{
+			MethodName: "GetOneSeat",
+			Handler:    _SeatsService_GetOneSeat_Handler,
 		},
 		{
 			MethodName: "DeleteSeat",

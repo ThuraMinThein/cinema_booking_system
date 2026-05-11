@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	pb "github.com/ThuraMinThein/common/api"
 	"github.com/ThuraMinThein/gateway/middlewares"
 	"github.com/ThuraMinThein/gateway/pkg/helper"
@@ -95,7 +97,15 @@ func (h *handler) HandleCreateBooking(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	req.UserId = c.GetString("user_id")
+
+	userId := c.GetString("user_id")
+
+	if userId == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	req.UserId = userId
 	response, err := h.bookingClient.Create(c, req)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -107,7 +117,20 @@ func (h *handler) HandleCreateBooking(c *gin.Context) {
 
 func (h *handler) HandleGetBooking(c *gin.Context) {
 	var req *pb.FindAllRequest
-	req.UserId = c.GetString("user_id")
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.GetString("user_id")
+
+	if userId == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	req.UserId = userId
 	response, err := h.bookingClient.FindAll(c, req)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})

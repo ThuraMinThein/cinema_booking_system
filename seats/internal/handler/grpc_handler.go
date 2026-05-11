@@ -40,7 +40,7 @@ func (h *seatGRPCHandler) GetSeats(c context.Context, request *api.GetSeatsReque
 	var seatList []*api.Seat
 	for _, seat := range seats {
 		seatList = append(seatList, &api.Seat{
-			Id:     int32(seat.ID),
+			Id:     int64(seat.ID),
 			Name:   seat.SeatNumber,
 			Row:    seat.RowNumber,
 			Column: seat.ColumnNumber,
@@ -49,6 +49,22 @@ func (h *seatGRPCHandler) GetSeats(c context.Context, request *api.GetSeatsReque
 
 	return &api.GetSeatsResponse{
 		Seats: seatList,
+	}, nil
+}
+
+func (h *seatGRPCHandler) GetOneSeat(c context.Context, request *api.GetOneSeatRequest) (*api.GetOneSeatResponse, error) {
+	seat, err := h.seatService.FindOne(request.SeatId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.GetOneSeatResponse{
+		Seat: &api.Seat{
+			Id:     int64(seat.ID),
+			Name:   seat.SeatNumber,
+			Row:    seat.RowNumber,
+			Column: seat.ColumnNumber,
+		},
 	}, nil
 }
 

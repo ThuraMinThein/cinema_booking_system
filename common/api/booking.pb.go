@@ -75,11 +75,13 @@ func (Status) EnumDescriptor() ([]byte, []int) {
 
 type Booking struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	SeatId        int32                  `protobuf:"varint,2,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	MovieId       int32                  `protobuf:"varint,4,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
-	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	SeatId        int64                  `protobuf:"varint,2,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	SeatNumber    string                 `protobuf:"bytes,3,opt,name=seat_number,json=seatNumber,proto3" json:"seat_number,omitempty"`
+	UserId        string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserName      string                 `protobuf:"bytes,5,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
+	MovieId       int64                  `protobuf:"varint,6,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
+	Status        string                 `protobuf:"bytes,7,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -114,18 +116,25 @@ func (*Booking) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Booking) GetId() int32 {
+func (x *Booking) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *Booking) GetSeatId() int32 {
+func (x *Booking) GetSeatId() int64 {
 	if x != nil {
 		return x.SeatId
 	}
 	return 0
+}
+
+func (x *Booking) GetSeatNumber() string {
+	if x != nil {
+		return x.SeatNumber
+	}
+	return ""
 }
 
 func (x *Booking) GetUserId() string {
@@ -135,7 +144,14 @@ func (x *Booking) GetUserId() string {
 	return ""
 }
 
-func (x *Booking) GetMovieId() int32 {
+func (x *Booking) GetUserName() string {
+	if x != nil {
+		return x.UserName
+	}
+	return ""
+}
+
+func (x *Booking) GetMovieId() int64 {
 	if x != nil {
 		return x.MovieId
 	}
@@ -152,8 +168,8 @@ func (x *Booking) GetStatus() string {
 type CreateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	MovieId       int32                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
-	SeatId        []int32                `protobuf:"varint,3,rep,packed,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	MovieId       int64                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
+	SeatIds       []int64                `protobuf:"varint,3,rep,packed,name=seat_ids,json=seatIds,proto3" json:"seat_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -195,16 +211,16 @@ func (x *CreateRequest) GetUserId() string {
 	return ""
 }
 
-func (x *CreateRequest) GetMovieId() int32 {
+func (x *CreateRequest) GetMovieId() int64 {
 	if x != nil {
 		return x.MovieId
 	}
 	return 0
 }
 
-func (x *CreateRequest) GetSeatId() []int32 {
+func (x *CreateRequest) GetSeatIds() []int64 {
 	if x != nil {
-		return x.SeatId
+		return x.SeatIds
 	}
 	return nil
 }
@@ -256,6 +272,7 @@ func (x *CreateResponse) GetStatus() string {
 type FindAllRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	MovieId       int64                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -295,6 +312,13 @@ func (x *FindAllRequest) GetUserId() string {
 		return x.UserId
 	}
 	return ""
+}
+
+func (x *FindAllRequest) GetMovieId() int64 {
+	if x != nil {
+		return x.MovieId
+	}
+	return 0
 }
 
 type FindAllResponse struct {
@@ -343,8 +367,8 @@ func (x *FindAllResponse) GetBookings() []*Booking {
 
 type IsSeatAvailableRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SeatId        int32                  `protobuf:"varint,1,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
-	MovieId       int32                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
+	SeatId        int64                  `protobuf:"varint,1,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	MovieId       int64                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -379,14 +403,14 @@ func (*IsSeatAvailableRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *IsSeatAvailableRequest) GetSeatId() int32 {
+func (x *IsSeatAvailableRequest) GetSeatId() int64 {
 	if x != nil {
 		return x.SeatId
 	}
 	return 0
 }
 
-func (x *IsSeatAvailableRequest) GetMovieId() int32 {
+func (x *IsSeatAvailableRequest) GetMovieId() int64 {
 	if x != nil {
 		return x.MovieId
 	}
@@ -439,8 +463,8 @@ func (x *IsSeatAvailableResponse) GetAvailable() bool {
 
 type UpdateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BookingId     int32                  `protobuf:"varint,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
-	NewSeatId     int32                  `protobuf:"varint,2,opt,name=new_seat_id,json=newSeatId,proto3" json:"new_seat_id,omitempty"`
+	BookingId     int64                  `protobuf:"varint,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	NewSeatId     int64                  `protobuf:"varint,2,opt,name=new_seat_id,json=newSeatId,proto3" json:"new_seat_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -475,14 +499,14 @@ func (*UpdateRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdateRequest) GetBookingId() int32 {
+func (x *UpdateRequest) GetBookingId() int64 {
 	if x != nil {
 		return x.BookingId
 	}
 	return 0
 }
 
-func (x *UpdateRequest) GetNewSeatId() int32 {
+func (x *UpdateRequest) GetNewSeatId() int64 {
 	if x != nil {
 		return x.NewSeatId
 	}
@@ -536,7 +560,7 @@ func (x *UpdateResponse) GetStatus() string {
 type CancelRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	BookingId     int32                  `protobuf:"varint,2,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	BookingId     int64                  `protobuf:"varint,2,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -578,7 +602,7 @@ func (x *CancelRequest) GetUserId() string {
 	return ""
 }
 
-func (x *CancelRequest) GetBookingId() int32 {
+func (x *CancelRequest) GetBookingId() int64 {
 	if x != nil {
 		return x.BookingId
 	}
@@ -1003,7 +1027,7 @@ func (x *GetUserByIdResponse) GetUser() *User {
 
 type Seat struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Row           string                 `protobuf:"bytes,3,opt,name=row,proto3" json:"row,omitempty"`
 	Column        string                 `protobuf:"bytes,4,opt,name=column,proto3" json:"column,omitempty"`
@@ -1042,7 +1066,7 @@ func (*Seat) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{18}
 }
 
-func (x *Seat) GetId() int32 {
+func (x *Seat) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -1113,42 +1137,6 @@ func (*SetSeatsRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{19}
 }
 
-type GetSeatsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetSeatsRequest) Reset() {
-	*x = GetSeatsRequest{}
-	mi := &file_api_booking_proto_msgTypes[20]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetSeatsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetSeatsRequest) ProtoMessage() {}
-
-func (x *GetSeatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_booking_proto_msgTypes[20]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetSeatsRequest.ProtoReflect.Descriptor instead.
-func (*GetSeatsRequest) Descriptor() ([]byte, []int) {
-	return file_api_booking_proto_rawDescGZIP(), []int{20}
-}
-
 type SetSeatsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -1158,7 +1146,7 @@ type SetSeatsResponse struct {
 
 func (x *SetSeatsResponse) Reset() {
 	*x = SetSeatsResponse{}
-	mi := &file_api_booking_proto_msgTypes[21]
+	mi := &file_api_booking_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1170,7 +1158,7 @@ func (x *SetSeatsResponse) String() string {
 func (*SetSeatsResponse) ProtoMessage() {}
 
 func (x *SetSeatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_booking_proto_msgTypes[21]
+	mi := &file_api_booking_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1183,7 +1171,7 @@ func (x *SetSeatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetSeatsResponse.ProtoReflect.Descriptor instead.
 func (*SetSeatsResponse) Descriptor() ([]byte, []int) {
-	return file_api_booking_proto_rawDescGZIP(), []int{21}
+	return file_api_booking_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *SetSeatsResponse) GetMessage() string {
@@ -1191,6 +1179,42 @@ func (x *SetSeatsResponse) GetMessage() string {
 		return x.Message
 	}
 	return ""
+}
+
+type GetSeatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSeatsRequest) Reset() {
+	*x = GetSeatsRequest{}
+	mi := &file_api_booking_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSeatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSeatsRequest) ProtoMessage() {}
+
+func (x *GetSeatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_booking_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSeatsRequest.ProtoReflect.Descriptor instead.
+func (*GetSeatsRequest) Descriptor() ([]byte, []int) {
+	return file_api_booking_proto_rawDescGZIP(), []int{21}
 }
 
 type GetSeatsResponse struct {
@@ -1237,16 +1261,104 @@ func (x *GetSeatsResponse) GetSeats() []*Seat {
 	return nil
 }
 
+type GetOneSeatRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SeatId        int64                  `protobuf:"varint,1,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOneSeatRequest) Reset() {
+	*x = GetOneSeatRequest{}
+	mi := &file_api_booking_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOneSeatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOneSeatRequest) ProtoMessage() {}
+
+func (x *GetOneSeatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_booking_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOneSeatRequest.ProtoReflect.Descriptor instead.
+func (*GetOneSeatRequest) Descriptor() ([]byte, []int) {
+	return file_api_booking_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetOneSeatRequest) GetSeatId() int64 {
+	if x != nil {
+		return x.SeatId
+	}
+	return 0
+}
+
+type GetOneSeatResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Seat          *Seat                  `protobuf:"bytes,1,opt,name=seat,proto3" json:"seat,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOneSeatResponse) Reset() {
+	*x = GetOneSeatResponse{}
+	mi := &file_api_booking_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOneSeatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOneSeatResponse) ProtoMessage() {}
+
+func (x *GetOneSeatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_booking_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOneSeatResponse.ProtoReflect.Descriptor instead.
+func (*GetOneSeatResponse) Descriptor() ([]byte, []int) {
+	return file_api_booking_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GetOneSeatResponse) GetSeat() *Seat {
+	if x != nil {
+		return x.Seat
+	}
+	return nil
+}
+
 type DeleteSeatRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SeatId        int32                  `protobuf:"varint,1,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	SeatId        int64                  `protobuf:"varint,1,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteSeatRequest) Reset() {
 	*x = DeleteSeatRequest{}
-	mi := &file_api_booking_proto_msgTypes[23]
+	mi := &file_api_booking_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1258,7 +1370,7 @@ func (x *DeleteSeatRequest) String() string {
 func (*DeleteSeatRequest) ProtoMessage() {}
 
 func (x *DeleteSeatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_booking_proto_msgTypes[23]
+	mi := &file_api_booking_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1271,10 +1383,10 @@ func (x *DeleteSeatRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSeatRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSeatRequest) Descriptor() ([]byte, []int) {
-	return file_api_booking_proto_rawDescGZIP(), []int{23}
+	return file_api_booking_proto_rawDescGZIP(), []int{25}
 }
 
-func (x *DeleteSeatRequest) GetSeatId() int32 {
+func (x *DeleteSeatRequest) GetSeatId() int64 {
 	if x != nil {
 		return x.SeatId
 	}
@@ -1290,7 +1402,7 @@ type DeleteSeatResponse struct {
 
 func (x *DeleteSeatResponse) Reset() {
 	*x = DeleteSeatResponse{}
-	mi := &file_api_booking_proto_msgTypes[24]
+	mi := &file_api_booking_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1302,7 +1414,7 @@ func (x *DeleteSeatResponse) String() string {
 func (*DeleteSeatResponse) ProtoMessage() {}
 
 func (x *DeleteSeatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_booking_proto_msgTypes[24]
+	mi := &file_api_booking_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1315,7 +1427,7 @@ func (x *DeleteSeatResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSeatResponse.ProtoReflect.Descriptor instead.
 func (*DeleteSeatResponse) Descriptor() ([]byte, []int) {
-	return file_api_booking_proto_rawDescGZIP(), []int{24}
+	return file_api_booking_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *DeleteSeatResponse) GetMessage() string {
@@ -1329,38 +1441,42 @@ var File_api_booking_proto protoreflect.FileDescriptor
 
 const file_api_booking_proto_rawDesc = "" +
 	"\n" +
-	"\x11api/booking.proto\x12\x06api.v1\"~\n" +
+	"\x11api/booking.proto\x12\x06api.v1\"\xbc\x01\n" +
 	"\aBooking\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x17\n" +
-	"\aseat_id\x18\x02 \x01(\x05R\x06seatId\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x19\n" +
-	"\bmovie_id\x18\x04 \x01(\x05R\amovieId\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\tR\x06status\"\\\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x17\n" +
+	"\aseat_id\x18\x02 \x01(\x03R\x06seatId\x12\x1f\n" +
+	"\vseat_number\x18\x03 \x01(\tR\n" +
+	"seatNumber\x12\x17\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\x12\x1b\n" +
+	"\tuser_name\x18\x05 \x01(\tR\buserName\x12\x19\n" +
+	"\bmovie_id\x18\x06 \x01(\x03R\amovieId\x12\x16\n" +
+	"\x06status\x18\a \x01(\tR\x06status\"^\n" +
 	"\rCreateRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
-	"\bmovie_id\x18\x02 \x01(\x05R\amovieId\x12\x17\n" +
-	"\aseat_id\x18\x03 \x03(\x05R\x06seatId\"(\n" +
+	"\bmovie_id\x18\x02 \x01(\x03R\amovieId\x12\x19\n" +
+	"\bseat_ids\x18\x03 \x03(\x03R\aseatIds\"(\n" +
 	"\x0eCreateResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status\")\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\"D\n" +
 	"\x0eFindAllRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\">\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
+	"\bmovie_id\x18\x02 \x01(\x03R\amovieId\">\n" +
 	"\x0fFindAllResponse\x12+\n" +
 	"\bbookings\x18\x01 \x03(\v2\x0f.api.v1.BookingR\bbookings\"L\n" +
 	"\x16IsSeatAvailableRequest\x12\x17\n" +
-	"\aseat_id\x18\x01 \x01(\x05R\x06seatId\x12\x19\n" +
-	"\bmovie_id\x18\x02 \x01(\x05R\amovieId\"7\n" +
+	"\aseat_id\x18\x01 \x01(\x03R\x06seatId\x12\x19\n" +
+	"\bmovie_id\x18\x02 \x01(\x03R\amovieId\"7\n" +
 	"\x17IsSeatAvailableResponse\x12\x1c\n" +
 	"\tavailable\x18\x01 \x01(\bR\tavailable\"N\n" +
 	"\rUpdateRequest\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x01 \x01(\x05R\tbookingId\x12\x1e\n" +
-	"\vnew_seat_id\x18\x02 \x01(\x05R\tnewSeatId\"(\n" +
+	"booking_id\x18\x01 \x01(\x03R\tbookingId\x12\x1e\n" +
+	"\vnew_seat_id\x18\x02 \x01(\x03R\tnewSeatId\"(\n" +
 	"\x0eUpdateResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\"G\n" +
 	"\rCancelRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x02 \x01(\x05R\tbookingId\"/\n" +
+	"booking_id\x18\x02 \x01(\x03R\tbookingId\"/\n" +
 	"\x0eCancelResponse\x12\x1d\n" +
 	"\n" +
 	"booking_id\x18\x01 \x01(\x03R\tbookingId\"\\\n" +
@@ -1387,19 +1503,23 @@ const file_api_booking_proto_rawDesc = "" +
 	"\x13GetUserByIdResponse\x12 \n" +
 	"\x04user\x18\x01 \x01(\v2\f.api.v1.UserR\x04user\"|\n" +
 	"\x04Seat\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
 	"\x03row\x18\x03 \x01(\tR\x03row\x12\x16\n" +
 	"\x06column\x18\x04 \x01(\tR\x06column\x12&\n" +
 	"\x06status\x18\x05 \x01(\x0e2\x0e.api.v1.StatusR\x06status\"\x11\n" +
-	"\x0fSetSeatsRequest\"\x11\n" +
-	"\x0fGetSeatsRequest\",\n" +
+	"\x0fSetSeatsRequest\",\n" +
 	"\x10SetSeatsResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"6\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\x11\n" +
+	"\x0fGetSeatsRequest\"6\n" +
 	"\x10GetSeatsResponse\x12\"\n" +
 	"\x05seats\x18\x01 \x03(\v2\f.api.v1.SeatR\x05seats\",\n" +
+	"\x11GetOneSeatRequest\x12\x17\n" +
+	"\aseat_id\x18\x01 \x01(\x03R\x06seatId\"6\n" +
+	"\x12GetOneSeatResponse\x12 \n" +
+	"\x04seat\x18\x01 \x01(\v2\f.api.v1.SeatR\x04seat\",\n" +
 	"\x11DeleteSeatRequest\x12\x17\n" +
-	"\aseat_id\x18\x01 \x01(\x05R\x06seatId\".\n" +
+	"\aseat_id\x18\x01 \x01(\x03R\x06seatId\".\n" +
 	"\x12DeleteSeatResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage*_\n" +
 	"\x06Status\x12\x1b\n" +
@@ -1417,10 +1537,12 @@ const file_api_booking_proto_rawDesc = "" +
 	"\n" +
 	"CreateUser\x12\x19.api.v1.CreateUserRequest\x1a\x1a.api.v1.CreateUserResponse\"\x00\x12B\n" +
 	"\tLoginUser\x12\x18.api.v1.LoginUserRequest\x1a\x19.api.v1.LoginUserResponse\"\x00\x12H\n" +
-	"\vGetUserById\x12\x1a.api.v1.GetUserByIdRequest\x1a\x1b.api.v1.GetUserByIdResponse\"\x002\xd7\x01\n" +
+	"\vGetUserById\x12\x1a.api.v1.GetUserByIdRequest\x1a\x1b.api.v1.GetUserByIdResponse\"\x002\x9e\x02\n" +
 	"\fSeatsService\x12?\n" +
 	"\bSetSeats\x12\x17.api.v1.SetSeatsRequest\x1a\x18.api.v1.SetSeatsResponse\"\x00\x12?\n" +
 	"\bGetSeats\x12\x17.api.v1.GetSeatsRequest\x1a\x18.api.v1.GetSeatsResponse\"\x00\x12E\n" +
+	"\n" +
+	"GetOneSeat\x12\x19.api.v1.GetOneSeatRequest\x1a\x1a.api.v1.GetOneSeatResponse\"\x00\x12E\n" +
 	"\n" +
 	"DeleteSeat\x12\x19.api.v1.DeleteSeatRequest\x1a\x1a.api.v1.DeleteSeatResponse\"\x00B&Z$github.com/ThuraMinThein/commons/apib\x06proto3"
 
@@ -1437,7 +1559,7 @@ func file_api_booking_proto_rawDescGZIP() []byte {
 }
 
 var file_api_booking_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_api_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_api_booking_proto_goTypes = []any{
 	(Status)(0),                     // 0: api.v1.Status
 	(*Booking)(nil),                 // 1: api.v1.Booking
@@ -1460,44 +1582,49 @@ var file_api_booking_proto_goTypes = []any{
 	(*GetUserByIdResponse)(nil),     // 18: api.v1.GetUserByIdResponse
 	(*Seat)(nil),                    // 19: api.v1.Seat
 	(*SetSeatsRequest)(nil),         // 20: api.v1.SetSeatsRequest
-	(*GetSeatsRequest)(nil),         // 21: api.v1.GetSeatsRequest
-	(*SetSeatsResponse)(nil),        // 22: api.v1.SetSeatsResponse
+	(*SetSeatsResponse)(nil),        // 21: api.v1.SetSeatsResponse
+	(*GetSeatsRequest)(nil),         // 22: api.v1.GetSeatsRequest
 	(*GetSeatsResponse)(nil),        // 23: api.v1.GetSeatsResponse
-	(*DeleteSeatRequest)(nil),       // 24: api.v1.DeleteSeatRequest
-	(*DeleteSeatResponse)(nil),      // 25: api.v1.DeleteSeatResponse
+	(*GetOneSeatRequest)(nil),       // 24: api.v1.GetOneSeatRequest
+	(*GetOneSeatResponse)(nil),      // 25: api.v1.GetOneSeatResponse
+	(*DeleteSeatRequest)(nil),       // 26: api.v1.DeleteSeatRequest
+	(*DeleteSeatResponse)(nil),      // 27: api.v1.DeleteSeatResponse
 }
 var file_api_booking_proto_depIdxs = []int32{
 	1,  // 0: api.v1.FindAllResponse.bookings:type_name -> api.v1.Booking
 	12, // 1: api.v1.GetUserByIdResponse.user:type_name -> api.v1.User
 	0,  // 2: api.v1.Seat.status:type_name -> api.v1.Status
 	19, // 3: api.v1.GetSeatsResponse.seats:type_name -> api.v1.Seat
-	2,  // 4: api.v1.BookingService.Create:input_type -> api.v1.CreateRequest
-	4,  // 5: api.v1.BookingService.FindAll:input_type -> api.v1.FindAllRequest
-	6,  // 6: api.v1.BookingService.IsSeatAvailable:input_type -> api.v1.IsSeatAvailableRequest
-	8,  // 7: api.v1.BookingService.Update:input_type -> api.v1.UpdateRequest
-	10, // 8: api.v1.BookingService.Cancel:input_type -> api.v1.CancelRequest
-	13, // 9: api.v1.UserService.CreateUser:input_type -> api.v1.CreateUserRequest
-	15, // 10: api.v1.UserService.LoginUser:input_type -> api.v1.LoginUserRequest
-	17, // 11: api.v1.UserService.GetUserById:input_type -> api.v1.GetUserByIdRequest
-	20, // 12: api.v1.SeatsService.SetSeats:input_type -> api.v1.SetSeatsRequest
-	21, // 13: api.v1.SeatsService.GetSeats:input_type -> api.v1.GetSeatsRequest
-	24, // 14: api.v1.SeatsService.DeleteSeat:input_type -> api.v1.DeleteSeatRequest
-	3,  // 15: api.v1.BookingService.Create:output_type -> api.v1.CreateResponse
-	5,  // 16: api.v1.BookingService.FindAll:output_type -> api.v1.FindAllResponse
-	7,  // 17: api.v1.BookingService.IsSeatAvailable:output_type -> api.v1.IsSeatAvailableResponse
-	9,  // 18: api.v1.BookingService.Update:output_type -> api.v1.UpdateResponse
-	11, // 19: api.v1.BookingService.Cancel:output_type -> api.v1.CancelResponse
-	14, // 20: api.v1.UserService.CreateUser:output_type -> api.v1.CreateUserResponse
-	16, // 21: api.v1.UserService.LoginUser:output_type -> api.v1.LoginUserResponse
-	18, // 22: api.v1.UserService.GetUserById:output_type -> api.v1.GetUserByIdResponse
-	22, // 23: api.v1.SeatsService.SetSeats:output_type -> api.v1.SetSeatsResponse
-	23, // 24: api.v1.SeatsService.GetSeats:output_type -> api.v1.GetSeatsResponse
-	25, // 25: api.v1.SeatsService.DeleteSeat:output_type -> api.v1.DeleteSeatResponse
-	15, // [15:26] is the sub-list for method output_type
-	4,  // [4:15] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	19, // 4: api.v1.GetOneSeatResponse.seat:type_name -> api.v1.Seat
+	2,  // 5: api.v1.BookingService.Create:input_type -> api.v1.CreateRequest
+	4,  // 6: api.v1.BookingService.FindAll:input_type -> api.v1.FindAllRequest
+	6,  // 7: api.v1.BookingService.IsSeatAvailable:input_type -> api.v1.IsSeatAvailableRequest
+	8,  // 8: api.v1.BookingService.Update:input_type -> api.v1.UpdateRequest
+	10, // 9: api.v1.BookingService.Cancel:input_type -> api.v1.CancelRequest
+	13, // 10: api.v1.UserService.CreateUser:input_type -> api.v1.CreateUserRequest
+	15, // 11: api.v1.UserService.LoginUser:input_type -> api.v1.LoginUserRequest
+	17, // 12: api.v1.UserService.GetUserById:input_type -> api.v1.GetUserByIdRequest
+	20, // 13: api.v1.SeatsService.SetSeats:input_type -> api.v1.SetSeatsRequest
+	22, // 14: api.v1.SeatsService.GetSeats:input_type -> api.v1.GetSeatsRequest
+	24, // 15: api.v1.SeatsService.GetOneSeat:input_type -> api.v1.GetOneSeatRequest
+	26, // 16: api.v1.SeatsService.DeleteSeat:input_type -> api.v1.DeleteSeatRequest
+	3,  // 17: api.v1.BookingService.Create:output_type -> api.v1.CreateResponse
+	5,  // 18: api.v1.BookingService.FindAll:output_type -> api.v1.FindAllResponse
+	7,  // 19: api.v1.BookingService.IsSeatAvailable:output_type -> api.v1.IsSeatAvailableResponse
+	9,  // 20: api.v1.BookingService.Update:output_type -> api.v1.UpdateResponse
+	11, // 21: api.v1.BookingService.Cancel:output_type -> api.v1.CancelResponse
+	14, // 22: api.v1.UserService.CreateUser:output_type -> api.v1.CreateUserResponse
+	16, // 23: api.v1.UserService.LoginUser:output_type -> api.v1.LoginUserResponse
+	18, // 24: api.v1.UserService.GetUserById:output_type -> api.v1.GetUserByIdResponse
+	21, // 25: api.v1.SeatsService.SetSeats:output_type -> api.v1.SetSeatsResponse
+	23, // 26: api.v1.SeatsService.GetSeats:output_type -> api.v1.GetSeatsResponse
+	25, // 27: api.v1.SeatsService.GetOneSeat:output_type -> api.v1.GetOneSeatResponse
+	27, // 28: api.v1.SeatsService.DeleteSeat:output_type -> api.v1.DeleteSeatResponse
+	17, // [17:29] is the sub-list for method output_type
+	5,  // [5:17] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_api_booking_proto_init() }
@@ -1511,7 +1638,7 @@ func file_api_booking_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_booking_proto_rawDesc), len(file_api_booking_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   25,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   3,
 		},

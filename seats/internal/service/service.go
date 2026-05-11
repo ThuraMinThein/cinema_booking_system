@@ -54,6 +54,10 @@ func (s *service) FindAll() ([]*model.Seat, error) {
 	return s.repository.FindAll()
 }
 
+func (s *service) FindOne(seatId int64) (*model.Seat, error) {
+	return s.repository.FindOne(seatId)
+}
+
 func (s *service) Delete(seatID int64) error {
 	return s.repository.Delete(seatID)
 }

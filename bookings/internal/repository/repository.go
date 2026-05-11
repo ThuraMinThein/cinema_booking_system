@@ -15,13 +15,13 @@ func NewRepository(db *gorm.DB) *Repository {
 	}
 }
 
-func (r *Repository) Create(booking *model.Booking) error {
+func (r *Repository) Create(booking []*model.Booking) error {
 	return r.database.Create(booking).Error
 }
 
-func (r *Repository) FindAll(movieID int64) ([]model.Booking, error) {
+func (r *Repository) FindAll(userId string, movieId int64) ([]model.Booking, error) {
 	var bookings []model.Booking
-	err := r.database.Where("movie_id = ?", movieID).Find(&bookings).Error
+	err := r.database.Where("user_id = ? AND movie_id = ?", userId, movieId).Find(&bookings).Error
 	return bookings, err
 }
 
