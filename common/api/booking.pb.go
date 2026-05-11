@@ -77,7 +77,7 @@ type Booking struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	SeatId        int32                  `protobuf:"varint,2,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
-	UserId        int32                  `protobuf:"varint,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	MovieId       int32                  `protobuf:"varint,4,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
 	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -128,11 +128,11 @@ func (x *Booking) GetSeatId() int32 {
 	return 0
 }
 
-func (x *Booking) GetUserId() int32 {
+func (x *Booking) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
-	return 0
+	return ""
 }
 
 func (x *Booking) GetMovieId() int32 {
@@ -151,7 +151,7 @@ func (x *Booking) GetStatus() string {
 
 type CreateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	MovieId       int32                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
 	SeatId        []int32                `protobuf:"varint,3,rep,packed,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -188,11 +188,11 @@ func (*CreateRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateRequest) GetUserId() int32 {
+func (x *CreateRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
-	return 0
+	return ""
 }
 
 func (x *CreateRequest) GetMovieId() int32 {
@@ -255,7 +255,7 @@ func (x *CreateResponse) GetStatus() string {
 
 type FindAllRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -290,11 +290,11 @@ func (*FindAllRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *FindAllRequest) GetUserId() int32 {
+func (x *FindAllRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
-	return 0
+	return ""
 }
 
 type FindAllResponse struct {
@@ -535,7 +535,8 @@ func (x *UpdateResponse) GetStatus() string {
 
 type CancelRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	BookingId     int32                  `protobuf:"varint,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	BookingId     int32                  `protobuf:"varint,2,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -568,6 +569,13 @@ func (x *CancelRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CancelRequest.ProtoReflect.Descriptor instead.
 func (*CancelRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *CancelRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
 }
 
 func (x *CancelRequest) GetBookingId() int32 {
@@ -1325,17 +1333,17 @@ const file_api_booking_proto_rawDesc = "" +
 	"\aBooking\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x17\n" +
 	"\aseat_id\x18\x02 \x01(\x05R\x06seatId\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\x05R\x06userId\x12\x19\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x19\n" +
 	"\bmovie_id\x18\x04 \x01(\x05R\amovieId\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\tR\x06status\"\\\n" +
 	"\rCreateRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x19\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
 	"\bmovie_id\x18\x02 \x01(\x05R\amovieId\x12\x17\n" +
 	"\aseat_id\x18\x03 \x03(\x05R\x06seatId\"(\n" +
 	"\x0eCreateResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\")\n" +
 	"\x0eFindAllRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x05R\x06userId\">\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\">\n" +
 	"\x0fFindAllResponse\x12+\n" +
 	"\bbookings\x18\x01 \x03(\v2\x0f.api.v1.BookingR\bbookings\"L\n" +
 	"\x16IsSeatAvailableRequest\x12\x17\n" +
@@ -1348,10 +1356,11 @@ const file_api_booking_proto_rawDesc = "" +
 	"booking_id\x18\x01 \x01(\x05R\tbookingId\x12\x1e\n" +
 	"\vnew_seat_id\x18\x02 \x01(\x05R\tnewSeatId\"(\n" +
 	"\x0eUpdateResponse\x12\x16\n" +
-	"\x06status\x18\x01 \x01(\tR\x06status\".\n" +
-	"\rCancelRequest\x12\x1d\n" +
+	"\x06status\x18\x01 \x01(\tR\x06status\"G\n" +
+	"\rCancelRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x01 \x01(\x05R\tbookingId\"/\n" +
+	"booking_id\x18\x02 \x01(\x05R\tbookingId\"/\n" +
 	"\x0eCancelResponse\x12\x1d\n" +
 	"\n" +
 	"booking_id\x18\x01 \x01(\x03R\tbookingId\"\\\n" +

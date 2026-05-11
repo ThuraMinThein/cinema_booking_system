@@ -5,7 +5,6 @@ import (
 	"github.com/ThuraMinThein/gateway/middlewares"
 	"github.com/ThuraMinThein/gateway/pkg/helper"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 type handler struct {
@@ -34,6 +33,9 @@ func (h *handler) RegisterRoutes(r *gin.Engine) {
 	booking.Use(middlewares.AuthMiddleware())
 	{
 		booking.POST("", h.HandleCreateBooking)
+		booking.GET("", h.HandleGetBooking)
+		// booking.GET("", h.HandleIsSeatAvailable)
+		booking.DELETE("", h.HandleCancelBooking)
 	}
 
 	seat := r.Group("/seats")
@@ -88,12 +90,59 @@ func (h *handler) HandleLoginUser(c *gin.Context) {
 // booking related handlers
 func (h *handler) HandleCreateBooking(c *gin.Context) {
 
-	logrus.Info("Create booking handler called")
+	var req *pb.CreateRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	req.UserId = c.GetString("user_id")
+	response, err := h.bookingClient.Create(c, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(201, response)
 
 }
 
 func (h *handler) HandleGetBooking(c *gin.Context) {
+	var req *pb.FindAllRequest
+	req.UserId = c.GetString("user_id")
+	response, err := h.bookingClient.FindAll(c, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, response)
+}
 
+func (h *handler) HandleIsSeatAvailable(c *gin.Context) {
+	var req *pb.IsSeatAvailableRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	response, err := h.bookingClient.IsSeatAvailable(c, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, response)
+}
+
+func (h *handler) HandleCancelBooking(c *gin.Context) {
+	var req *pb.CancelRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	req.UserId = c.GetString("user_id")
+	response, err := h.bookingClient.Cancel(c, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, response)
 }
 
 // seats related handlers
