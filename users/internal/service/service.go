@@ -17,34 +17,42 @@ func NewService(repository types.UsersRepository) *user {
 	return &user{repository: repository}
 }
 
-func (s *user) CreateUser(req *model.User) error {
+func (s *user) CreateUser(req *model.User) (string, error) {
 	hasEmail, err := s.hasEmail(req.Email)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if hasEmail {
-		return errors.New("Invalid Email")
+		return "", errors.New("Invalid Email")
 	}
 
 	hashedPassword, err := helpers.Hash(req.Password)
 	if err != nil {
-		return err
+		return "", err
 	}
 	req.Password = hashedPassword
 
-	return s.repository.Create(req)
+	if err = s.repository.Create(req); err != nil {
+		return "", err
+	}
+	return req.Id, nil
 }
 
-func (s *user) LoginUser(req *api.LoginUserRequest) error {
+func (s *user) LoginUser(req *api.LoginUserRequest) (string, error) {
 	user, err := s.repository.FindByEmail(req.Email)
 	if err != nil {
-		return err
+		return "", errors.New("Invalid Credentials")
 	}
 
-	if user.Password != req.Password {
-		return err
+	if user == nil {
+		return "", errors.New("Invalid Credentials")
 	}
-	return nil
+
+	if err := helpers.VerifyHashed(user.Password, req.Password); err != nil {
+		return "", errors.New("Invalid Credentials")
+	}
+
+	return user.Id, nil
 }
 
 func (s *user) GetUserById(id string) (*model.User, error) {

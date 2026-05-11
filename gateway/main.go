@@ -30,7 +30,13 @@ func main() {
 		logrus.Fatal("Database connection failed", err)
 	}
 
-	grpc_client.InitGrpcClients()
+	userCon, bookingCon, seatCon := grpc_client.InitGrpcClients()
+
+	defer func() {
+		userCon.Close()
+		bookingCon.Close()
+		seatCon.Close()
+	}()
 
 	r := gin.New()
 	r.Use(gin.Recovery())

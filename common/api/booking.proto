@@ -23,7 +23,7 @@ message Booking {
 message CreateRequest {
     int32 user_id = 1;
     int32 movie_id = 2;
-    int32 seat_id = 3;
+    repeated int32 seat_id = 3;
 }
 
 message CreateResponse {

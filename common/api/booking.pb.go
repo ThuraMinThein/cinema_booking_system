@@ -153,7 +153,7 @@ type CreateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        int32                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	MovieId       int32                  `protobuf:"varint,2,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
-	SeatId        int32                  `protobuf:"varint,3,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	SeatId        []int32                `protobuf:"varint,3,rep,packed,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -202,11 +202,11 @@ func (x *CreateRequest) GetMovieId() int32 {
 	return 0
 }
 
-func (x *CreateRequest) GetSeatId() int32 {
+func (x *CreateRequest) GetSeatId() []int32 {
 	if x != nil {
 		return x.SeatId
 	}
-	return 0
+	return nil
 }
 
 type CreateResponse struct {
@@ -1331,7 +1331,7 @@ const file_api_booking_proto_rawDesc = "" +
 	"\rCreateRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12\x19\n" +
 	"\bmovie_id\x18\x02 \x01(\x05R\amovieId\x12\x17\n" +
-	"\aseat_id\x18\x03 \x01(\x05R\x06seatId\"(\n" +
+	"\aseat_id\x18\x03 \x03(\x05R\x06seatId\"(\n" +
 	"\x0eCreateResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\")\n" +
 	"\x0eFindAllRequest\x12\x17\n" +

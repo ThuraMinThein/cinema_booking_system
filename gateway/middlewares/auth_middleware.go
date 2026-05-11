@@ -10,6 +10,7 @@ import (
 	"github.com/ThuraMinThein/gateway/pkg/cache"
 	"github.com/ThuraMinThein/gateway/pkg/helper"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -35,18 +36,21 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if err = cache.GetCacheData("auth:"+claims.Sub, &user); err != nil {
 			userClient := grpc_client.GetUserClient()
-			user, err := userClient.GetUserById(c, &api.GetUserByIdRequest{UserId: claims.Sub})
+			userRes, err := userClient.GetUserById(c, &api.GetUserByIdRequest{UserId: claims.Sub})
 			if err != nil {
+				logrus.Info("service error")
 				abortError(c, http.StatusUnauthorized)
 				return
 			}
-			cache.SetCacheData("auth:"+claims.Sub, user, time.Duration(60)*time.Minute)
+			user = userRes.User
+			err = cache.SetCacheData("auth:"+claims.Sub, user, time.Duration(60)*time.Minute)
+			if err != nil {
+				logrus.Info("cache error")
+				abortError(c, http.StatusUnauthorized)
+				return
+			}
 		}
 
-		if err != nil {
-			abortError(c, http.StatusUnauthorized)
-			return
-		}
 		c.Set("user_id", user.Id)
 		c.Next()
 

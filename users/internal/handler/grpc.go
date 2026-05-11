@@ -28,23 +28,27 @@ func (h *grpcHandler) CreateUser(ctx context.Context, request *api.CreateUserReq
 		Email:    request.Email,
 		Password: request.Password,
 	}
-	err := h.userService.CreateUser(userModel)
+	userId, err := h.userService.CreateUser(userModel)
 	if err != nil {
 		return nil, err
 	}
 
 	return &api.CreateUserResponse{
-		Status: "created",
+		Status: "success",
+		UserId: userId,
 	}, nil
 }
 
 func (h *grpcHandler) LoginUser(ctx context.Context, request *api.LoginUserRequest) (*api.LoginUserResponse, error) {
-	err := h.userService.LoginUser(request)
+	userId, err := h.userService.LoginUser(request)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.LoginUserResponse{}, nil
+	return &api.LoginUserResponse{
+		Status: "success",
+		UserId: userId,
+	}, nil
 }
 
 func (h *grpcHandler) GetUserById(ctx context.Context, request *api.GetUserByIdRequest) (*api.GetUserByIdResponse, error) {

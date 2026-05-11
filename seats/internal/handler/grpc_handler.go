@@ -22,11 +22,34 @@ func NewGRPCSeatsService(grpc *grpc.Server, seatService types.SeatService) {
 }
 
 func (h *seatGRPCHandler) SetSeats(c context.Context, request *api.SetSeatsRequest) (*api.SetSeatsResponse, error) {
-	return nil, nil
+	if err := h.seatService.SetSeats(); err != nil {
+		return nil, err
+	}
+
+	return &api.SetSeatsResponse{
+		Message: "Set seats successfully",
+	}, nil
 }
 
 func (h *seatGRPCHandler) GetSeats(c context.Context, request *api.GetSeatsRequest) (*api.GetSeatsResponse, error) {
-	return nil, nil
+	seats, err := h.seatService.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var seatList []*api.Seat
+	for _, seat := range seats {
+		seatList = append(seatList, &api.Seat{
+			Id:     int32(seat.ID),
+			Name:   seat.SeatNumber,
+			Row:    seat.RowNumber,
+			Column: seat.ColumnNumber,
+		})
+	}
+
+	return &api.GetSeatsResponse{
+		Seats: seatList,
+	}, nil
 }
 
 func (h *seatGRPCHandler) DeleteSeat(c context.Context, request *api.DeleteSeatRequest) (*api.DeleteSeatResponse, error) {

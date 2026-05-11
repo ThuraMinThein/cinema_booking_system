@@ -6,8 +6,8 @@ import (
 )
 
 type UsersService interface {
-	CreateUser(*model.User) error
-	LoginUser(*api.LoginUserRequest) error
+	CreateUser(*model.User) (string, error)
+	LoginUser(*api.LoginUserRequest) (string, error)
 	GetUserById(string) (*model.User, error)
 }
 

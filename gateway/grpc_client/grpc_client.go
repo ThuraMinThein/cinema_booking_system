@@ -12,14 +12,13 @@ var uc pb.UserServiceClient
 var bc pb.BookingServiceClient
 var sc pb.SeatsServiceClient
 
-func InitGrpcClients() {
+func InitGrpcClients() (*grpc.ClientConn, *grpc.ClientConn, *grpc.ClientConn) {
 
 	usersConn, err := grpc.NewClient(config.Config.UsersServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Fatalf("Failed to create gRPC client: %v", err)
 	}
 
-	defer usersConn.Close()
 	logrus.WithField("port", config.Config.UsersServiceAddress).Info("Connected to gRPC users service")
 
 	uc = pb.NewUserServiceClient(usersConn)
@@ -29,7 +28,6 @@ func InitGrpcClients() {
 		logrus.Fatalf("Failed to create gRPC client: %v", err)
 	}
 
-	defer bookingsConn.Close()
 	logrus.WithField("port", config.Config.BookingsServiceAddress).Info("Connected to gRPC bookings service")
 
 	bc = pb.NewBookingServiceClient(bookingsConn)
@@ -39,10 +37,10 @@ func InitGrpcClients() {
 		logrus.Fatalf("Failed to create gRPC client: %v", err)
 	}
 
-	defer seatsConn.Close()
 	logrus.WithField("port", config.Config.SeatsServiceAddress).Info("Connected to gRPC seats service")
 	sc = pb.NewSeatsServiceClient(seatsConn)
 
+	return usersConn, bookingsConn, seatsConn
 }
 
 func GetUserClient() pb.UserServiceClient {

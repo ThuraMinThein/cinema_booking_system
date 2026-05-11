@@ -36,6 +36,13 @@ func (h *handler) RegisterRoutes(r *gin.Engine) {
 		booking.POST("", h.HandleCreateBooking)
 	}
 
+	seat := r.Group("/seats")
+	{
+		seat.POST("/set", h.HandleSetSeats)
+		seat.GET("", h.HandleGetSeats)
+		seat.DELETE("", h.HandleDeleteSeat)
+	}
+
 }
 
 // user related handlers
@@ -55,7 +62,7 @@ func (h *handler) HandleCreateUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"user": response, "token": token})
+	c.JSON(201, gin.H{"user": response, "token": token})
 }
 
 func (h *handler) HandleLoginUser(c *gin.Context) {
@@ -69,6 +76,7 @@ func (h *handler) HandleLoginUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
 	token, err := helper.GetAccessToken(response.UserId)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -91,10 +99,26 @@ func (h *handler) HandleGetBooking(c *gin.Context) {
 // seats related handlers
 func (h *handler) HandleSetSeats(c *gin.Context) {
 
+	var req *pb.SetSeatsRequest
+	response, err := h.seatsClient.SetSeats(c, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(201, response)
+
 }
 
 func (h *handler) HandleGetSeats(c *gin.Context) {
+	var req *pb.GetSeatsRequest
+	response, err := h.seatsClient.GetSeats(c, req)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 
+	c.JSON(200, response)
 }
 
 func (h *handler) HandleDeleteSeat(c *gin.Context) {
