@@ -21,7 +21,7 @@ func (r *Repository) Create(seats []*model.Seat) error {
 
 func (r *Repository) FindAll() ([]*model.Seat, error) {
 	var seat []*model.Seat
-	err := r.database.Order("seat_number ASC").Find(&seat).Error
+	err := r.database.Order("id ASC").Find(&seat).Error
 	return seat, err
 }
 
