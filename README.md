@@ -127,12 +127,23 @@ cinema_booking/
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/users` | Register a new user |
+| `POST` | `/users/login` | User login |
 
 ### Bookings
 
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/bookings` | Create a new booking |
+| `POST` | `/bookings/hold` | Hold a booking |
+| `GET` | `/bookings` | Get user's bookings |
+| `DELETE` | `/bookings` | Cancel booking |
+
+### Seats
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/seats/set` | Seating seats with mock data |
+| `GET` | `/seats` | Get seats |
 
 ### System
 
@@ -207,6 +218,7 @@ JWT_SECRET_KEY=your_jwt_secret
 | `seat_number` | `string` (e.g. `A1`) |
 | `row_number` | `string` (e.g. `A`) |
 | `column_number` | `string` (e.g. `1`) |
+| `status` | `string` (e.g. `Available`) |
 | `created_at` | `time.Time` |
 | `updated_at` | `time.Time` |
 
