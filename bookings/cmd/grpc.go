@@ -4,6 +4,7 @@ import (
 	"net"
 
 	"github.com/ThuraMinThein/bookings/database"
+	"github.com/ThuraMinThein/bookings/grpc_client"
 	"github.com/ThuraMinThein/bookings/internal/handler"
 	"github.com/ThuraMinThein/bookings/internal/repository"
 	"github.com/ThuraMinThein/bookings/internal/service"
@@ -31,7 +32,9 @@ func (s *grpcServer) Run() error {
 
 	// register the service
 	repository := repository.NewRepository(database.DB)
-	svc := service.NewService(repository)
+	uc := grpc_client.GetUserClient()
+	sc := grpc_client.GetSeatsClient()
+	svc := service.NewService(repository, uc, sc)
 	handler.NewGRPCBookingsService(grpcServer, svc)
 
 	logrus.WithField("port", s.address).Info("Bookings gRPC server is running")

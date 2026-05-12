@@ -4,6 +4,7 @@ import (
 	"github.com/ThuraMinThein/bookings/config"
 	"github.com/ThuraMinThein/bookings/database"
 	"github.com/ThuraMinThein/bookings/grpc_client"
+	redis_client "github.com/ThuraMinThein/bookings/pkg/redis"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,6 +17,10 @@ func main() {
 	}
 
 	uc, sc := grpc_client.InitGrpcClients()
+
+	if err := redis_client.InitRedis(); err != nil {
+		logrus.Fatal("Redis connection failed", err)
+	}
 
 	defer func() {
 		uc.Close()

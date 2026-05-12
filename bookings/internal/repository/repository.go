@@ -26,12 +26,17 @@ func (r *Repository) FindAll(userId string, movieId int64) ([]model.Booking, err
 }
 
 func (r *Repository) FindByMovieAndSeatID(movieID int64, seatID int64) (*model.Booking, error) {
-	var booking model.Booking
-	err := r.database.Where("movie_id = ? AND seat_id = ?", movieID, seatID).Find(&booking).Error
-	if err != nil {
-		return nil, err
+	var booking *model.Booking
+	result := r.database.Where("movie_id = ? AND seat_id = ?", movieID, seatID).Find(&booking)
+
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	return &booking, nil
+
+	if result.RowsAffected == 0 {
+		return nil, nil
+	}
+	return booking, nil
 }
 
 func (r *Repository) Update(booking *model.Booking) error {

@@ -35,6 +35,7 @@ func (h *handler) RegisterRoutes(r *gin.Engine) {
 	booking.Use(middlewares.AuthMiddleware())
 	{
 		booking.POST("", h.HandleCreateBooking)
+		booking.POST("/hold", h.HandleHoldBooking)
 		booking.GET("", h.HandleGetBooking)
 		// booking.GET("", h.HandleIsSeatAvailable)
 		booking.DELETE("", h.HandleCancelBooking)
@@ -113,6 +114,31 @@ func (h *handler) HandleCreateBooking(c *gin.Context) {
 	}
 	c.JSON(201, response)
 
+}
+
+func (h *handler) HandleHoldBooking(c *gin.Context) {
+	var req *pb.HoldBookingRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	userId := c.GetString("user_id")
+
+	if userId == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	req.UserId = userId
+	response, err := h.bookingClient.HoldBooking(c, req)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, response)
 }
 
 func (h *handler) HandleGetBooking(c *gin.Context) {

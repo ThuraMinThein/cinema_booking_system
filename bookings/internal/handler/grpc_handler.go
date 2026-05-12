@@ -29,6 +29,17 @@ func (h *bookingGRPCHandler) Create(c context.Context, request *api.CreateReques
 		Status: "success",
 	}, nil
 }
+
+func (h *bookingGRPCHandler) HoldBooking(c context.Context, request *api.HoldBookingRequest) (*api.HoldBookingResponse, error) {
+	if err := h.bookingService.HoldBooking(request); err != nil {
+		return nil, err
+	}
+
+	return &api.HoldBookingResponse{
+		Status: "success",
+	}, nil
+}
+
 func (h *bookingGRPCHandler) FindAll(c context.Context, request *api.FindAllRequest) (*api.FindAllResponse, error) {
 	bookings, err := h.bookingService.FindAll(request.UserId, request.MovieId)
 	if err != nil {
@@ -50,9 +61,17 @@ func (h *bookingGRPCHandler) FindAll(c context.Context, request *api.FindAllRequ
 		Bookings: bookingResponse,
 	}, nil
 }
+
 func (h *bookingGRPCHandler) IsSeatAvailable(c context.Context, request *api.IsSeatAvailableRequest) (*api.IsSeatAvailableResponse, error) {
-	return nil, nil
+	isAvailable, err := h.bookingService.IsSeatAvailable(request.MovieId, request.SeatId)
+	if err != nil {
+		return nil, err
+	}
+	return &api.IsSeatAvailableResponse{
+		Available: isAvailable,
+	}, nil
 }
+
 func (h *bookingGRPCHandler) Update(c context.Context, request *api.UpdateRequest) (*api.UpdateResponse, error) {
 	return nil, nil
 }

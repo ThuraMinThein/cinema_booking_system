@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	BookingService_Create_FullMethodName          = "/api.v1.BookingService/Create"
+	BookingService_HoldBooking_FullMethodName     = "/api.v1.BookingService/HoldBooking"
 	BookingService_FindAll_FullMethodName         = "/api.v1.BookingService/FindAll"
 	BookingService_IsSeatAvailable_FullMethodName = "/api.v1.BookingService/IsSeatAvailable"
 	BookingService_Update_FullMethodName          = "/api.v1.BookingService/Update"
@@ -31,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BookingServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	HoldBooking(ctx context.Context, in *HoldBookingRequest, opts ...grpc.CallOption) (*HoldBookingResponse, error)
 	FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*FindAllResponse, error)
 	IsSeatAvailable(ctx context.Context, in *IsSeatAvailableRequest, opts ...grpc.CallOption) (*IsSeatAvailableResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
@@ -49,6 +51,16 @@ func (c *bookingServiceClient) Create(ctx context.Context, in *CreateRequest, op
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateResponse)
 	err := c.cc.Invoke(ctx, BookingService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bookingServiceClient) HoldBooking(ctx context.Context, in *HoldBookingRequest, opts ...grpc.CallOption) (*HoldBookingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HoldBookingResponse)
+	err := c.cc.Invoke(ctx, BookingService_HoldBooking_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,6 +112,7 @@ func (c *bookingServiceClient) Cancel(ctx context.Context, in *CancelRequest, op
 // for forward compatibility.
 type BookingServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	HoldBooking(context.Context, *HoldBookingRequest) (*HoldBookingResponse, error)
 	FindAll(context.Context, *FindAllRequest) (*FindAllResponse, error)
 	IsSeatAvailable(context.Context, *IsSeatAvailableRequest) (*IsSeatAvailableResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
@@ -116,6 +129,9 @@ type UnimplementedBookingServiceServer struct{}
 
 func (UnimplementedBookingServiceServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedBookingServiceServer) HoldBooking(context.Context, *HoldBookingRequest) (*HoldBookingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method HoldBooking not implemented")
 }
 func (UnimplementedBookingServiceServer) FindAll(context.Context, *FindAllRequest) (*FindAllResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FindAll not implemented")
@@ -164,6 +180,24 @@ func _BookingService_Create_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BookingServiceServer).Create(ctx, req.(*CreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BookingService_HoldBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HoldBookingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).HoldBooking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookingService_HoldBooking_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).HoldBooking(ctx, req.(*HoldBookingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -250,6 +284,10 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Create",
 			Handler:    _BookingService_Create_Handler,
+		},
+		{
+			MethodName: "HoldBooking",
+			Handler:    _BookingService_HoldBooking_Handler,
 		},
 		{
 			MethodName: "FindAll",

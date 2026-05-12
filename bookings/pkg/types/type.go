@@ -7,6 +7,7 @@ import (
 
 type BookingService interface {
 	Create(*api.CreateRequest) error
+	HoldBooking(*api.HoldBookingRequest) error
 	FindAll(string, int64) ([]model.Booking, error)
 	IsSeatAvailable(int64, int64) (bool, error)
 	Update(*model.Booking) error
