@@ -7,6 +7,7 @@ type Seat struct {
 	SeatNumber   string
 	ColumnNumber string
 	RowNumber    string
+	Status       string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }

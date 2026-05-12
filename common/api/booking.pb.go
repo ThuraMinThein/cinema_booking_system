@@ -524,6 +524,7 @@ func (x *IsSeatAvailableRequest) GetMovieId() int64 {
 type IsSeatAvailableResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Available     bool                   `protobuf:"varint,1,opt,name=available,proto3" json:"available,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -563,6 +564,13 @@ func (x *IsSeatAvailableResponse) GetAvailable() bool {
 		return x.Available
 	}
 	return false
+}
+
+func (x *IsSeatAvailableResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
 }
 
 type UpdateRequest struct {
@@ -1135,7 +1143,7 @@ type Seat struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Row           string                 `protobuf:"bytes,3,opt,name=row,proto3" json:"row,omitempty"`
 	Column        string                 `protobuf:"bytes,4,opt,name=column,proto3" json:"column,omitempty"`
-	Status        Status                 `protobuf:"varint,5,opt,name=status,proto3,enum=api.v1.Status" json:"status,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1198,11 +1206,11 @@ func (x *Seat) GetColumn() string {
 	return ""
 }
 
-func (x *Seat) GetStatus() Status {
+func (x *Seat) GetStatus() string {
 	if x != nil {
 		return x.Status
 	}
-	return Status_STATUS_SEAT_UNSPECIFIED
+	return ""
 }
 
 type SetSeatsRequest struct {
@@ -1287,6 +1295,7 @@ func (x *SetSeatsResponse) GetMessage() string {
 
 type GetSeatsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	MovieId       int64                  `protobuf:"varint,1,opt,name=movie_id,json=movieId,proto3" json:"movie_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1319,6 +1328,13 @@ func (x *GetSeatsRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetSeatsRequest.ProtoReflect.Descriptor instead.
 func (*GetSeatsRequest) Descriptor() ([]byte, []int) {
 	return file_api_booking_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetSeatsRequest) GetMovieId() int64 {
+	if x != nil {
+		return x.MovieId
+	}
+	return 0
 }
 
 type GetSeatsResponse struct {
@@ -1574,9 +1590,10 @@ const file_api_booking_proto_rawDesc = "" +
 	"\bbookings\x18\x01 \x03(\v2\x0f.api.v1.BookingR\bbookings\"L\n" +
 	"\x16IsSeatAvailableRequest\x12\x17\n" +
 	"\aseat_id\x18\x01 \x01(\x03R\x06seatId\x12\x19\n" +
-	"\bmovie_id\x18\x02 \x01(\x03R\amovieId\"7\n" +
+	"\bmovie_id\x18\x02 \x01(\x03R\amovieId\"Q\n" +
 	"\x17IsSeatAvailableResponse\x12\x1c\n" +
-	"\tavailable\x18\x01 \x01(\bR\tavailable\"N\n" +
+	"\tavailable\x18\x01 \x01(\bR\tavailable\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"N\n" +
 	"\rUpdateRequest\x12\x1d\n" +
 	"\n" +
 	"booking_id\x18\x01 \x01(\x03R\tbookingId\x12\x1e\n" +
@@ -1611,17 +1628,18 @@ const file_api_booking_proto_rawDesc = "" +
 	"\x12GetUserByIdRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"7\n" +
 	"\x13GetUserByIdResponse\x12 \n" +
-	"\x04user\x18\x01 \x01(\v2\f.api.v1.UserR\x04user\"|\n" +
+	"\x04user\x18\x01 \x01(\v2\f.api.v1.UserR\x04user\"l\n" +
 	"\x04Seat\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x10\n" +
 	"\x03row\x18\x03 \x01(\tR\x03row\x12\x16\n" +
-	"\x06column\x18\x04 \x01(\tR\x06column\x12&\n" +
-	"\x06status\x18\x05 \x01(\x0e2\x0e.api.v1.StatusR\x06status\"\x11\n" +
+	"\x06column\x18\x04 \x01(\tR\x06column\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\"\x11\n" +
 	"\x0fSetSeatsRequest\",\n" +
 	"\x10SetSeatsResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\x11\n" +
-	"\x0fGetSeatsRequest\"6\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\",\n" +
+	"\x0fGetSeatsRequest\x12\x19\n" +
+	"\bmovie_id\x18\x01 \x01(\x03R\amovieId\"6\n" +
 	"\x10GetSeatsResponse\x12\"\n" +
 	"\x05seats\x18\x01 \x03(\v2\f.api.v1.SeatR\x05seats\",\n" +
 	"\x11GetOneSeatRequest\x12\x17\n" +
@@ -1706,40 +1724,39 @@ var file_api_booking_proto_goTypes = []any{
 var file_api_booking_proto_depIdxs = []int32{
 	1,  // 0: api.v1.FindAllResponse.bookings:type_name -> api.v1.Booking
 	14, // 1: api.v1.GetUserByIdResponse.user:type_name -> api.v1.User
-	0,  // 2: api.v1.Seat.status:type_name -> api.v1.Status
-	21, // 3: api.v1.GetSeatsResponse.seats:type_name -> api.v1.Seat
-	21, // 4: api.v1.GetOneSeatResponse.seat:type_name -> api.v1.Seat
-	2,  // 5: api.v1.BookingService.Create:input_type -> api.v1.CreateRequest
-	4,  // 6: api.v1.BookingService.HoldBooking:input_type -> api.v1.HoldBookingRequest
-	6,  // 7: api.v1.BookingService.FindAll:input_type -> api.v1.FindAllRequest
-	8,  // 8: api.v1.BookingService.IsSeatAvailable:input_type -> api.v1.IsSeatAvailableRequest
-	10, // 9: api.v1.BookingService.Update:input_type -> api.v1.UpdateRequest
-	12, // 10: api.v1.BookingService.Cancel:input_type -> api.v1.CancelRequest
-	15, // 11: api.v1.UserService.CreateUser:input_type -> api.v1.CreateUserRequest
-	17, // 12: api.v1.UserService.LoginUser:input_type -> api.v1.LoginUserRequest
-	19, // 13: api.v1.UserService.GetUserById:input_type -> api.v1.GetUserByIdRequest
-	22, // 14: api.v1.SeatsService.SetSeats:input_type -> api.v1.SetSeatsRequest
-	24, // 15: api.v1.SeatsService.GetSeats:input_type -> api.v1.GetSeatsRequest
-	26, // 16: api.v1.SeatsService.GetOneSeat:input_type -> api.v1.GetOneSeatRequest
-	28, // 17: api.v1.SeatsService.DeleteSeat:input_type -> api.v1.DeleteSeatRequest
-	3,  // 18: api.v1.BookingService.Create:output_type -> api.v1.CreateResponse
-	5,  // 19: api.v1.BookingService.HoldBooking:output_type -> api.v1.HoldBookingResponse
-	7,  // 20: api.v1.BookingService.FindAll:output_type -> api.v1.FindAllResponse
-	9,  // 21: api.v1.BookingService.IsSeatAvailable:output_type -> api.v1.IsSeatAvailableResponse
-	11, // 22: api.v1.BookingService.Update:output_type -> api.v1.UpdateResponse
-	13, // 23: api.v1.BookingService.Cancel:output_type -> api.v1.CancelResponse
-	16, // 24: api.v1.UserService.CreateUser:output_type -> api.v1.CreateUserResponse
-	18, // 25: api.v1.UserService.LoginUser:output_type -> api.v1.LoginUserResponse
-	20, // 26: api.v1.UserService.GetUserById:output_type -> api.v1.GetUserByIdResponse
-	23, // 27: api.v1.SeatsService.SetSeats:output_type -> api.v1.SetSeatsResponse
-	25, // 28: api.v1.SeatsService.GetSeats:output_type -> api.v1.GetSeatsResponse
-	27, // 29: api.v1.SeatsService.GetOneSeat:output_type -> api.v1.GetOneSeatResponse
-	29, // 30: api.v1.SeatsService.DeleteSeat:output_type -> api.v1.DeleteSeatResponse
-	18, // [18:31] is the sub-list for method output_type
-	5,  // [5:18] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	21, // 2: api.v1.GetSeatsResponse.seats:type_name -> api.v1.Seat
+	21, // 3: api.v1.GetOneSeatResponse.seat:type_name -> api.v1.Seat
+	2,  // 4: api.v1.BookingService.Create:input_type -> api.v1.CreateRequest
+	4,  // 5: api.v1.BookingService.HoldBooking:input_type -> api.v1.HoldBookingRequest
+	6,  // 6: api.v1.BookingService.FindAll:input_type -> api.v1.FindAllRequest
+	8,  // 7: api.v1.BookingService.IsSeatAvailable:input_type -> api.v1.IsSeatAvailableRequest
+	10, // 8: api.v1.BookingService.Update:input_type -> api.v1.UpdateRequest
+	12, // 9: api.v1.BookingService.Cancel:input_type -> api.v1.CancelRequest
+	15, // 10: api.v1.UserService.CreateUser:input_type -> api.v1.CreateUserRequest
+	17, // 11: api.v1.UserService.LoginUser:input_type -> api.v1.LoginUserRequest
+	19, // 12: api.v1.UserService.GetUserById:input_type -> api.v1.GetUserByIdRequest
+	22, // 13: api.v1.SeatsService.SetSeats:input_type -> api.v1.SetSeatsRequest
+	24, // 14: api.v1.SeatsService.GetSeats:input_type -> api.v1.GetSeatsRequest
+	26, // 15: api.v1.SeatsService.GetOneSeat:input_type -> api.v1.GetOneSeatRequest
+	28, // 16: api.v1.SeatsService.DeleteSeat:input_type -> api.v1.DeleteSeatRequest
+	3,  // 17: api.v1.BookingService.Create:output_type -> api.v1.CreateResponse
+	5,  // 18: api.v1.BookingService.HoldBooking:output_type -> api.v1.HoldBookingResponse
+	7,  // 19: api.v1.BookingService.FindAll:output_type -> api.v1.FindAllResponse
+	9,  // 20: api.v1.BookingService.IsSeatAvailable:output_type -> api.v1.IsSeatAvailableResponse
+	11, // 21: api.v1.BookingService.Update:output_type -> api.v1.UpdateResponse
+	13, // 22: api.v1.BookingService.Cancel:output_type -> api.v1.CancelResponse
+	16, // 23: api.v1.UserService.CreateUser:output_type -> api.v1.CreateUserResponse
+	18, // 24: api.v1.UserService.LoginUser:output_type -> api.v1.LoginUserResponse
+	20, // 25: api.v1.UserService.GetUserById:output_type -> api.v1.GetUserByIdResponse
+	23, // 26: api.v1.SeatsService.SetSeats:output_type -> api.v1.SetSeatsResponse
+	25, // 27: api.v1.SeatsService.GetSeats:output_type -> api.v1.GetSeatsResponse
+	27, // 28: api.v1.SeatsService.GetOneSeat:output_type -> api.v1.GetOneSeatResponse
+	29, // 29: api.v1.SeatsService.DeleteSeat:output_type -> api.v1.DeleteSeatResponse
+	17, // [17:30] is the sub-list for method output_type
+	4,  // [4:17] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_api_booking_proto_init() }

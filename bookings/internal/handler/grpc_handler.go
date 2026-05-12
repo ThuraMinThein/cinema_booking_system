@@ -63,12 +63,13 @@ func (h *bookingGRPCHandler) FindAll(c context.Context, request *api.FindAllRequ
 }
 
 func (h *bookingGRPCHandler) IsSeatAvailable(c context.Context, request *api.IsSeatAvailableRequest) (*api.IsSeatAvailableResponse, error) {
-	isAvailable, err := h.bookingService.IsSeatAvailable(request.MovieId, request.SeatId)
+	isAvailable, message, err := h.bookingService.IsSeatAvailable(request.MovieId, request.SeatId)
 	if err != nil {
 		return nil, err
 	}
 	return &api.IsSeatAvailableResponse{
 		Available: isAvailable,
+		Message:   message,
 	}, nil
 }
 

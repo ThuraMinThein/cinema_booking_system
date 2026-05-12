@@ -46,7 +46,7 @@ func (s *service) Create(request *api.CreateRequest) error {
 			return err
 		}
 
-		isAvailable, err := s.IsSeatAvailable(request.MovieId, request.SeatIds[book])
+		isAvailable, _, err := s.IsSeatAvailable(request.MovieId, request.SeatIds[book])
 
 		if err != nil {
 			return err
@@ -86,7 +86,7 @@ func (s *service) HoldBooking(request *api.HoldBookingRequest) error {
 		return err
 	}
 
-	isAvailable, err := s.IsSeatAvailable(request.MovieId, request.SeatId)
+	isAvailable, _, err := s.IsSeatAvailable(request.MovieId, request.SeatId)
 	if err != nil {
 		return err
 	}
@@ -115,24 +115,31 @@ func (s *service) FindAll(userId string, movieId int64) ([]model.Booking, error)
 	return s.repository.FindAll(userId, movieId)
 }
 
-func (s *service) IsSeatAvailable(movieID int64, seatID int64) (bool, error) {
+func (s *service) IsSeatAvailable(movieID int64, seatID int64) (bool, string, error) {
 
 	var booking *model.Booking
 
 	if err := memory_storage.GetData("booking:"+string(movieID)+string(seatID), &booking); err != nil {
-		return false, err
+		return false, "Redis Error", err
 	}
 
 	if booking != nil {
-		return false, nil
+		return false, "Held", nil
 	}
 
 	booking, err := s.repository.FindByMovieAndSeatID(movieID, seatID)
 	if err != nil {
-		return false, err
+		return false, "DB Error", err
 	}
 
-	return booking == nil, nil
+	var message string
+	if booking == nil {
+		message = "Available"
+	} else {
+		message = "Booked"
+	}
+
+	return booking == nil, message, nil
 }
 
 func (s *service) Update(booking *model.Booking) error {

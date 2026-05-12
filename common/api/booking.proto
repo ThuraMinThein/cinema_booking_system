@@ -59,6 +59,7 @@ message IsSeatAvailableRequest {
 
 message IsSeatAvailableResponse {
     bool available = 1;
+    string message = 2;
 }
 
 message UpdateRequest {
@@ -133,7 +134,7 @@ message Seat {
     string name = 2;
     string row = 3;
     string column = 4;
-    Status status = 5;
+    string status = 5;
 }
 
 enum Status {
@@ -149,7 +150,9 @@ message SetSeatsResponse {
     string message = 1;
 }
 
-message GetSeatsRequest {}
+message GetSeatsRequest {
+    int64 movie_id = 1;
+}
 
 message GetSeatsResponse {
     repeated Seat seats = 1;

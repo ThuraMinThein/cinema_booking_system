@@ -210,6 +210,12 @@ func (h *handler) HandleSetSeats(c *gin.Context) {
 
 func (h *handler) HandleGetSeats(c *gin.Context) {
 	var req *pb.GetSeatsRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
 	response, err := h.seatsClient.GetSeats(c, req)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})

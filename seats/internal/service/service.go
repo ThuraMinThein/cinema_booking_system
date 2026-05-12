@@ -1,19 +1,23 @@
 package service
 
 import (
+	"context"
 	"errors"
 
+	"github.com/ThuraMinThein/common/api"
 	"github.com/ThuraMinThein/seats/internal/model"
 	"github.com/ThuraMinThein/seats/internal/repository"
 )
 
 type service struct {
-	repository *repository.Repository
+	repository            *repository.Repository
+	bookingGrpcConnection api.BookingServiceClient
 }
 
-func NewService(repo *repository.Repository) *service {
+func NewService(repo *repository.Repository, bookingGrpcConnection api.BookingServiceClient) *service {
 	return &service{
-		repository: repo,
+		repository:            repo,
+		bookingGrpcConnection: bookingGrpcConnection,
 	}
 }
 
@@ -50,8 +54,38 @@ func (s *service) SetSeats() error {
 	return s.repository.Create(seats)
 }
 
-func (s *service) FindAll() ([]*model.Seat, error) {
-	return s.repository.FindAll()
+func (s *service) FindAll(movieId int64) ([]*model.Seat, error) {
+	seats, err := s.repository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var seatList []*model.Seat
+	for seat := range seats {
+
+		response, err := s.bookingGrpcConnection.IsSeatAvailable(
+			context.Background(),
+			&api.IsSeatAvailableRequest{
+				MovieId: movieId,
+				SeatId:  seats[seat].ID,
+			},
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		seatList = append(seatList, &model.Seat{
+			ID:           seats[seat].ID,
+			SeatNumber:   seats[seat].SeatNumber,
+			ColumnNumber: seats[seat].ColumnNumber,
+			RowNumber:    seats[seat].RowNumber,
+			Status:       response.Message,
+		})
+	}
+
+	return seatList, nil
+
 }
 
 func (s *service) FindOne(seatId int64) (*model.Seat, error) {

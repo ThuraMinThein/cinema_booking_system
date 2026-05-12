@@ -32,7 +32,7 @@ func (h *seatGRPCHandler) SetSeats(c context.Context, request *api.SetSeatsReque
 }
 
 func (h *seatGRPCHandler) GetSeats(c context.Context, request *api.GetSeatsRequest) (*api.GetSeatsResponse, error) {
-	seats, err := h.seatService.FindAll()
+	seats, err := h.seatService.FindAll(request.MovieId)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +44,7 @@ func (h *seatGRPCHandler) GetSeats(c context.Context, request *api.GetSeatsReque
 			Name:   seat.SeatNumber,
 			Row:    seat.RowNumber,
 			Column: seat.ColumnNumber,
+			Status: seat.Status,
 		})
 	}
 
