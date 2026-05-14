@@ -8,6 +8,7 @@ service BookingService {
     rpc Create(CreateRequest) returns (CreateResponse) {}
     rpc HoldBooking(HoldBookingRequest) returns(HoldBookingResponse) {}
     rpc FindAll(FindAllRequest) returns (FindAllResponse) {}
+    rpc FindAllBookedSeats(FindAllBookedSeatsRequest) returns (FindAllBookedSeatsResponse) {}
     rpc IsSeatAvailable(IsSeatAvailableRequest) returns (IsSeatAvailableResponse) {}
     rpc Update(UpdateRequest) returns (UpdateResponse) {}
     rpc Cancel(CancelRequest) returns (CancelResponse) {}
@@ -49,6 +50,14 @@ message FindAllRequest {
 }
 
 message FindAllResponse {
+    repeated Booking bookings = 1;
+}
+
+message FindAllBookedSeatsRequest {
+    int64 movie_id = 2;
+}
+
+message FindAllBookedSeatsResponse {
     repeated Booking bookings = 1;
 }
 

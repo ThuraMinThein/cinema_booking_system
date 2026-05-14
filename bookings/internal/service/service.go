@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ThuraMinThein/bookings/internal/model"
@@ -46,14 +47,14 @@ func (s *service) Create(request *api.CreateRequest) error {
 			return err
 		}
 
-		isAvailable, _, err := s.IsSeatAvailable(request.MovieId, request.SeatIds[book])
+		isAvailable, message, err := s.IsSeatAvailable(request.MovieId, request.SeatIds[book])
 
 		if err != nil {
 			return err
 		}
 
 		if !isAvailable {
-			return errors.New("Seat is already taken")
+			return errors.New("Seat is already " + message)
 		}
 
 		bookings = append(bookings, &model.Booking{
@@ -86,13 +87,13 @@ func (s *service) HoldBooking(request *api.HoldBookingRequest) error {
 		return err
 	}
 
-	isAvailable, _, err := s.IsSeatAvailable(request.MovieId, request.SeatId)
+	isAvailable, message, err := s.IsSeatAvailable(request.MovieId, request.SeatId)
 	if err != nil {
 		return err
 	}
 
 	if !isAvailable {
-		return errors.New("Seat is already taken")
+		return errors.New("Seat is already " + message)
 	}
 
 	booking := &model.Booking{
@@ -104,22 +105,44 @@ func (s *service) HoldBooking(request *api.HoldBookingRequest) error {
 		Showtime:   time.Now().Add(2 * 24 * time.Hour),
 	}
 
-	return memory_storage.SetData(
-		"booking:"+string(request.MovieId)+string(request.SeatId),
-		booking,
-		2*time.Minute,
-	)
+	return memory_storage.SaveBooking(request, booking)
 }
 
 func (s *service) FindAll(userId string, movieId int64) ([]model.Booking, error) {
 	return s.repository.FindAll(userId, movieId)
 }
 
+func (s *service) FindAllBookedSeats(movieId int64) ([]model.Booking, error) {
+	dbBookings, err := s.repository.FindAllBookedSeats(movieId)
+	if err != nil {
+		return nil, err
+	}
+
+	redisBookings, err := memory_storage.GetMovieBookings(movieId)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range dbBookings {
+		dbBookings[i].Status = "Booked"
+	}
+
+	for i := range redisBookings {
+		redisBookings[i].Status = "Held"
+	}
+
+	allBookings := append(dbBookings, redisBookings...)
+
+	return allBookings, nil
+}
+
 func (s *service) IsSeatAvailable(movieID int64, seatID int64) (bool, string, error) {
 
 	var booking *model.Booking
 
-	if err := memory_storage.GetData("booking:"+string(movieID)+string(seatID), &booking); err != nil {
+	key := fmt.Sprintf("booking:%d:%d", movieID, seatID)
+
+	if err := memory_storage.GetData(key, &booking); err != nil {
 		return false, "Redis Error", err
 	}
 

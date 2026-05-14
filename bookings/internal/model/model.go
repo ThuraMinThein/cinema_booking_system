@@ -10,4 +10,5 @@ type Booking struct {
 	UserName   string    `json:"user_name"`
 	MovieID    int64     `json:"movie_id"`
 	Showtime   time.Time `json:"showtime"`
+	Status     string    `json:"status"`
 }

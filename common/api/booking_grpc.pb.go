@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BookingService_Create_FullMethodName          = "/api.v1.BookingService/Create"
-	BookingService_HoldBooking_FullMethodName     = "/api.v1.BookingService/HoldBooking"
-	BookingService_FindAll_FullMethodName         = "/api.v1.BookingService/FindAll"
-	BookingService_IsSeatAvailable_FullMethodName = "/api.v1.BookingService/IsSeatAvailable"
-	BookingService_Update_FullMethodName          = "/api.v1.BookingService/Update"
-	BookingService_Cancel_FullMethodName          = "/api.v1.BookingService/Cancel"
+	BookingService_Create_FullMethodName             = "/api.v1.BookingService/Create"
+	BookingService_HoldBooking_FullMethodName        = "/api.v1.BookingService/HoldBooking"
+	BookingService_FindAll_FullMethodName            = "/api.v1.BookingService/FindAll"
+	BookingService_FindAllBookedSeats_FullMethodName = "/api.v1.BookingService/FindAllBookedSeats"
+	BookingService_IsSeatAvailable_FullMethodName    = "/api.v1.BookingService/IsSeatAvailable"
+	BookingService_Update_FullMethodName             = "/api.v1.BookingService/Update"
+	BookingService_Cancel_FullMethodName             = "/api.v1.BookingService/Cancel"
 )
 
 // BookingServiceClient is the client API for BookingService service.
@@ -34,6 +35,7 @@ type BookingServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	HoldBooking(ctx context.Context, in *HoldBookingRequest, opts ...grpc.CallOption) (*HoldBookingResponse, error)
 	FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*FindAllResponse, error)
+	FindAllBookedSeats(ctx context.Context, in *FindAllBookedSeatsRequest, opts ...grpc.CallOption) (*FindAllBookedSeatsResponse, error)
 	IsSeatAvailable(ctx context.Context, in *IsSeatAvailableRequest, opts ...grpc.CallOption) (*IsSeatAvailableResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	Cancel(ctx context.Context, in *CancelRequest, opts ...grpc.CallOption) (*CancelResponse, error)
@@ -77,6 +79,16 @@ func (c *bookingServiceClient) FindAll(ctx context.Context, in *FindAllRequest, 
 	return out, nil
 }
 
+func (c *bookingServiceClient) FindAllBookedSeats(ctx context.Context, in *FindAllBookedSeatsRequest, opts ...grpc.CallOption) (*FindAllBookedSeatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindAllBookedSeatsResponse)
+	err := c.cc.Invoke(ctx, BookingService_FindAllBookedSeats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bookingServiceClient) IsSeatAvailable(ctx context.Context, in *IsSeatAvailableRequest, opts ...grpc.CallOption) (*IsSeatAvailableResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(IsSeatAvailableResponse)
@@ -114,6 +126,7 @@ type BookingServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	HoldBooking(context.Context, *HoldBookingRequest) (*HoldBookingResponse, error)
 	FindAll(context.Context, *FindAllRequest) (*FindAllResponse, error)
+	FindAllBookedSeats(context.Context, *FindAllBookedSeatsRequest) (*FindAllBookedSeatsResponse, error)
 	IsSeatAvailable(context.Context, *IsSeatAvailableRequest) (*IsSeatAvailableResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	Cancel(context.Context, *CancelRequest) (*CancelResponse, error)
@@ -135,6 +148,9 @@ func (UnimplementedBookingServiceServer) HoldBooking(context.Context, *HoldBooki
 }
 func (UnimplementedBookingServiceServer) FindAll(context.Context, *FindAllRequest) (*FindAllResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FindAll not implemented")
+}
+func (UnimplementedBookingServiceServer) FindAllBookedSeats(context.Context, *FindAllBookedSeatsRequest) (*FindAllBookedSeatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method FindAllBookedSeats not implemented")
 }
 func (UnimplementedBookingServiceServer) IsSeatAvailable(context.Context, *IsSeatAvailableRequest) (*IsSeatAvailableResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method IsSeatAvailable not implemented")
@@ -220,6 +236,24 @@ func _BookingService_FindAll_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookingService_FindAllBookedSeats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindAllBookedSeatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).FindAllBookedSeats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookingService_FindAllBookedSeats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).FindAllBookedSeats(ctx, req.(*FindAllBookedSeatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BookingService_IsSeatAvailable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IsSeatAvailableRequest)
 	if err := dec(in); err != nil {
@@ -292,6 +326,10 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindAll",
 			Handler:    _BookingService_FindAll_Handler,
+		},
+		{
+			MethodName: "FindAllBookedSeats",
+			Handler:    _BookingService_FindAllBookedSeats_Handler,
 		},
 		{
 			MethodName: "IsSeatAvailable",

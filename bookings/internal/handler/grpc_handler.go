@@ -62,6 +62,29 @@ func (h *bookingGRPCHandler) FindAll(c context.Context, request *api.FindAllRequ
 	}, nil
 }
 
+func (h *bookingGRPCHandler) FindAllBookedSeats(c context.Context, request *api.FindAllBookedSeatsRequest) (*api.FindAllBookedSeatsResponse, error) {
+	bookings, err := h.bookingService.FindAllBookedSeats(request.MovieId)
+	if err != nil {
+		return nil, err
+	}
+
+	bookingResponse := make([]*api.Booking, 0, len(bookings))
+	for _, booking := range bookings {
+		bookingResponse = append(bookingResponse, &api.Booking{
+			UserId:     booking.UserID,
+			UserName:   booking.UserName,
+			MovieId:    booking.MovieID,
+			SeatId:     booking.SeatID,
+			SeatNumber: booking.SeatNumber,
+			Status:     booking.Status,
+		})
+	}
+
+	return &api.FindAllBookedSeatsResponse{
+		Bookings: bookingResponse,
+	}, nil
+}
+
 func (h *bookingGRPCHandler) IsSeatAvailable(c context.Context, request *api.IsSeatAvailableRequest) (*api.IsSeatAvailableResponse, error) {
 	isAvailable, message, err := h.bookingService.IsSeatAvailable(request.MovieId, request.SeatId)
 	if err != nil {

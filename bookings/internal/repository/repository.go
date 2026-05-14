@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/ThuraMinThein/bookings/internal/model"
 	"gorm.io/gorm"
 )
@@ -25,18 +27,25 @@ func (r *Repository) FindAll(userId string, movieId int64) ([]model.Booking, err
 	return bookings, err
 }
 
+func (r *Repository) FindAllBookedSeats(movieId int64) ([]model.Booking, error) {
+	var bookings []model.Booking
+	err := r.database.Where("movie_id = ?", movieId).Find(&bookings).Error
+	return bookings, err
+}
+
 func (r *Repository) FindByMovieAndSeatID(movieID int64, seatID int64) (*model.Booking, error) {
-	var booking *model.Booking
-	result := r.database.Where("movie_id = ? AND seat_id = ?", movieID, seatID).Find(&booking)
 
-	if result.Error != nil {
-		return nil, result.Error
-	}
+	var booking model.Booking
 
-	if result.RowsAffected == 0 {
+	result := r.database.
+		Where("movie_id = ? AND seat_id = ?", movieID, seatID).
+		First(&booking)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
-	return booking, nil
+
+	return &booking, nil
 }
 
 func (r *Repository) Update(booking *model.Booking) error {

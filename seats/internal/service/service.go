@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/ThuraMinThein/common/api"
 	"github.com/ThuraMinThein/seats/internal/model"
@@ -55,35 +56,44 @@ func (s *service) SetSeats() error {
 }
 
 func (s *service) FindAll(movieId int64) ([]*model.Seat, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	seats, err := s.repository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
+	bookings, err := s.bookingGrpcConnection.FindAllBookedSeats(ctx, &api.FindAllBookedSeatsRequest{
+		MovieId: movieId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	bookedMap := make(map[int64]string)
+
+	for _, booking := range bookings.Bookings {
+		bookedMap[booking.SeatId] = booking.Status
+	}
+
 	var seatList []*model.Seat
-	for seat := range seats {
+	for _, seat := range seats {
 
-		response, err := s.bookingGrpcConnection.IsSeatAvailable(
-			context.Background(),
-			&api.IsSeatAvailableRequest{
-				MovieId: movieId,
-				SeatId:  seats[seat].ID,
-			},
-		)
+		status := "Available"
 
-		if err != nil {
-			return nil, err
+		if bookedMap[seat.ID] != "" {
+			status = bookedMap[seat.ID]
 		}
 
 		seatList = append(seatList, &model.Seat{
-			ID:           seats[seat].ID,
-			SeatNumber:   seats[seat].SeatNumber,
-			ColumnNumber: seats[seat].ColumnNumber,
-			RowNumber:    seats[seat].RowNumber,
-			Status:       response.Message,
+			ID:           seat.ID,
+			SeatNumber:   seat.SeatNumber,
+			ColumnNumber: seat.ColumnNumber,
+			RowNumber:    seat.RowNumber,
+			Status:       status,
 		})
 	}
-
 	return seatList, nil
 
 }

@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ThuraMinThein/users/config"
 	"gorm.io/driver/postgres"
@@ -32,6 +33,16 @@ func DatabaseInit() error {
 	if err != nil {
 		return err
 	}
+
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return err
+	}
+
+	// Connection pool settings
+	sqlDB.SetMaxIdleConns(25)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	return nil
 }

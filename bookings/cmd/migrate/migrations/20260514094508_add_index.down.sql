@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS idx_bookings_movie_id_seat_id;
