@@ -1,4 +1,7 @@
 
 .env
 
-/tmp
+gateway/tmp
+users/tmp/
+seats/tmp/
+bookings/tmp/
