@@ -373,6 +373,34 @@ cd <service> && go run cmd/main.go
 
 ---
 
+## Performance
+
+### Optimizations
+
+#### Get All Seats — `GET /seats` *(14 May 2026)*
+
+**Improvement: ~20 s → ~1.5 s average response time**
+
+| Technique | Details |
+|---|---|
+| **Batch operations** | Replaced row-by-row DB & Redis lookups with bulk batch fetches to minimize round-trips |
+| **Database indexes** | Added indexes on frequently queried seat columns to speed up query execution |
+| **Redis key scanning** | Switched to efficient Redis key-scan patterns instead of individual key lookups per seat |
+
+**Load-test results** (1 000 concurrent requests, concurrency 50):
+
+| Metric | Value |
+|---|---|
+| Total Requests | 1 000 |
+| Concurrency | 50 |
+| Successes | 998 |
+| Failures | 2 |
+| Total Time | 24.23 s |
+| Average Latency | **1 119.86 ms** |
+| Requests / sec | 41.28 |
+
+---
+
 ## License
 
 This project is intended for educational and training purposes.
