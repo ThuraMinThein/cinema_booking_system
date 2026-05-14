@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/ThuraMinThein/users/internal/model"
 	"gorm.io/gorm"
 )
@@ -21,12 +23,8 @@ func (s *store) Create(req *model.User) error {
 
 func (s *store) FindByEmail(email string) (*model.User, error) {
 	var user *model.User
-	result := s.db.Find(&user, "email = ?", email)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
+	result := s.db.First(&user, "email = ?", email)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
 	return user, nil
@@ -34,12 +32,8 @@ func (s *store) FindByEmail(email string) (*model.User, error) {
 
 func (s *store) GetUserById(id string) (*model.User, error) {
 	var user *model.User
-	result := s.db.Find(&user, "id = ?", id)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
+	result := s.db.First(&user, "id = ?", id)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
 	return user, nil
