@@ -399,6 +399,16 @@ cd <service> && go run cmd/main.go
 | Average Latency | **1 119.86 ms** |
 | Requests / sec | 41.28 |
 
+#### Hold Booking — `POST /bookings/hold` *(15 May 2026)*
+
+**Improvement: 5 - 8 s → 1.5 - 2 s average response time**
+
+| Technique | Details |
+|---|---|
+| **Parallel gRPC requests** | Executed user-service and seat-service gRPC calls concurrently using goroutines and sync.WaitGroup to reduce total request latency |
+| **Redis distributed locking** | Replaced separate availability checks with atomic Redis SETNX locking to prevent concurrent double-booking of the same seat |
+| **Reduced Redis round-trips** | Eliminated redundant Redis GET operations by using lock-based seat holding instead of read-before-write validation |
+
 ---
 
 ## License
