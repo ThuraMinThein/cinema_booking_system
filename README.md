@@ -399,6 +399,8 @@ cd <service> && go run cmd/main.go
 | Average Latency | **1 119.86 ms** |
 | Requests / sec | 41.28 |
 
+---
+
 #### Hold Booking — `POST /bookings/hold` *(15 May 2026)*
 
 **Improvement: 5 - 8 s → 1.5 - 2 s average response time**
