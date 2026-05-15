@@ -3,6 +3,7 @@ package memory_storage
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,11 +13,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func SetData(key string, value interface{}, expiration time.Duration) error {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
+func SetData(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
 	client := redis_client.GetRedisClient()
 	if client == nil {
 		return fmt.Errorf("redis client not initialized")
@@ -29,10 +26,7 @@ func SetData(key string, value interface{}, expiration time.Duration) error {
 	return err
 }
 
-func SaveBooking(request *api.HoldBookingRequest, booking interface{}) error {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func SaveBooking(ctx context.Context, request *api.HoldBookingRequest, booking interface{}) error {
 
 	client := redis_client.GetRedisClient()
 
@@ -46,21 +40,30 @@ func SaveBooking(request *api.HoldBookingRequest, booking interface{}) error {
 
 	pipe := client.TxPipeline()
 
-	pipe.Set(ctx, key, data, 2*time.Minute)
+	setCmd := pipe.SetNX(ctx, key, data, 2*time.Minute)
 
 	pipe.SAdd(ctx, indexKey, key)
 
 	pipe.Expire(ctx, indexKey, 2*time.Minute)
 
 	_, err = pipe.Exec(ctx)
+	if err != nil {
+		return err
+	}
 
-	return err
+	ok, err := setCmd.Result()
+	if err != nil {
+		return err
+	}
+
+	if !ok {
+		return errors.New("seat already held")
+	}
+
+	return nil
 }
 
-func GetData(key string, result interface{}) error {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func GetData(ctx context.Context, key string, result interface{}) error {
 
 	client := redis_client.GetRedisClient()
 	if client == nil {
@@ -76,10 +79,7 @@ func GetData(key string, result interface{}) error {
 	return err
 }
 
-func GetMovieBookings(movieId int64) ([]model.Booking, error) {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func GetMovieBookings(ctx context.Context, movieId int64) ([]model.Booking, error) {
 
 	client := redis_client.GetRedisClient()
 
@@ -123,10 +123,7 @@ func GetMovieBookings(movieId int64) ([]model.Booking, error) {
 	return bookings, nil
 }
 
-func InvalidateStorage(key string) error {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+func InvalidateStorage(ctx context.Context, key string) error {
 
 	client := redis_client.GetRedisClient()
 	if client == nil {

@@ -15,6 +15,7 @@ type Endpoint struct {
 	Method string
 	URL    string
 	BODY   string
+	HEADER string
 }
 
 var endpoints = []Endpoint{
@@ -23,17 +24,18 @@ var endpoints = []Endpoint{
 		Method: "GET",
 		URL:    "http://localhost:3333/health",
 	},
-	{
-		Name:   "Seats API",
-		Method: "GET",
-		URL:    "http://localhost:3333/seats",
-		BODY:   `{"movie_id": 10}`,
-	},
 	// {
-	// 	Name:   "booking API",
+	// 	Name:   "Seats API",
 	// 	Method: "GET",
-	// 	URL:    "http://localhost:3333/bookings",
+	// 	URL:    "http://localhost:3333/seats",
+	// 	BODY:   `{"movie_id": 10}`,
 	// },
+	{
+		Name:   "booking API",
+		Method: "POST",
+		URL:    "http://localhost:3333/bookings/hold",
+		BODY:   `{"movie_id": 10, "seat_id": 5}`,
+	},
 }
 
 const (
@@ -85,6 +87,9 @@ func runLoadTest(client *http.Client, endpoint Endpoint) {
 				atomic.AddInt64(&failureCount, 1)
 				return
 			}
+
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", "Bearer token")
 
 			resp, err := client.Do(req)
 			latency := time.Since(reqStart).Milliseconds()

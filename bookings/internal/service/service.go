@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/ThuraMinThein/bookings/internal/model"
@@ -27,10 +28,14 @@ func NewService(repo *repository.Repository, userGrpcConnection api.UserServiceC
 }
 
 func (s *service) Create(request *api.CreateRequest) error {
+
+	gRPCCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
 	var bookings []*model.Booking
 
 	user, err := s.userGrpcConnection.GetUserById(
-		context.Background(),
+		gRPCCtx,
 		&api.GetUserByIdRequest{
 			UserId: request.UserId,
 		},
@@ -42,7 +47,7 @@ func (s *service) Create(request *api.CreateRequest) error {
 
 	for book := range request.SeatIds {
 
-		seat, err := s.seatGrpcConnection.GetOneSeat(context.Background(), &api.GetOneSeatRequest{SeatId: request.SeatIds[book]})
+		seat, err := s.seatGrpcConnection.GetOneSeat(gRPCCtx, &api.GetOneSeatRequest{SeatId: request.SeatIds[book]})
 		if err != nil {
 			return err
 		}
@@ -71,41 +76,91 @@ func (s *service) Create(request *api.CreateRequest) error {
 
 func (s *service) HoldBooking(request *api.HoldBookingRequest) error {
 
-	user, err := s.userGrpcConnection.GetUserById(
-		context.Background(),
-		&api.GetUserByIdRequest{
-			UserId: request.UserId,
-		},
+	redisCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	gRPCCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var (
+		user *api.GetUserByIdResponse
+		seat *api.GetOneSeatResponse
+
+		userErr error
+		seatErr error
 	)
 
-	if err != nil {
-		return err
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		user, userErr = s.userGrpcConnection.GetUserById(
+			gRPCCtx,
+			&api.GetUserByIdRequest{
+				UserId: request.UserId,
+			},
+		)
+	}()
+
+	go func() {
+		defer wg.Done()
+		seat, seatErr = s.seatGrpcConnection.GetOneSeat(
+			gRPCCtx,
+			&api.GetOneSeatRequest{
+				SeatId: request.SeatId,
+			},
+		)
+	}()
+
+	wg.Wait()
+
+	if userErr != nil {
+		return userErr
 	}
 
-	seat, err := s.seatGrpcConnection.GetOneSeat(context.Background(), &api.GetOneSeatRequest{SeatId: request.SeatId})
-	if err != nil {
-		return err
+	if seatErr != nil {
+		return seatErr
 	}
 
-	isAvailable, message, err := s.IsSeatAvailable(request.MovieId, request.SeatId)
-	if err != nil {
-		return err
-	}
-
-	if !isAvailable {
-		return errors.New("Seat is already " + message)
-	}
-
-	booking := &model.Booking{
+	bookingModel := &model.Booking{
 		UserID:     request.UserId,
 		UserName:   user.User.Name,
 		MovieID:    request.MovieId,
 		SeatID:     request.SeatId,
 		SeatNumber: seat.Seat.Name,
-		Showtime:   time.Now().Add(2 * 24 * time.Hour),
+		Showtime:   time.Now(),
 	}
 
-	return memory_storage.SaveBooking(request, booking)
+	if err := memory_storage.SaveBooking(redisCtx, request, bookingModel); err != nil {
+		return err
+	}
+
+	booking, err := s.repository.FindByMovieAndSeatID(
+		request.MovieId,
+		request.SeatId,
+	)
+
+	rollback := func() {
+		key := fmt.Sprintf(
+			"booking:%d:%d",
+			request.MovieId,
+			request.SeatId,
+		)
+		_ = memory_storage.InvalidateStorage(redisCtx, key)
+	}
+
+	if err != nil {
+		rollback()
+		return err
+	}
+
+	if booking != nil {
+		rollback()
+		return errors.New("seat already booked")
+	}
+
+	return nil
 }
 
 func (s *service) FindAll(userId string, movieId int64) ([]model.Booking, error) {
@@ -113,12 +168,15 @@ func (s *service) FindAll(userId string, movieId int64) ([]model.Booking, error)
 }
 
 func (s *service) FindAllBookedSeats(movieId int64) ([]model.Booking, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
 	dbBookings, err := s.repository.FindAllBookedSeats(movieId)
 	if err != nil {
 		return nil, err
 	}
 
-	redisBookings, err := memory_storage.GetMovieBookings(movieId)
+	redisBookings, err := memory_storage.GetMovieBookings(ctx, movieId)
 	if err != nil {
 		return nil, err
 	}
@@ -138,11 +196,14 @@ func (s *service) FindAllBookedSeats(movieId int64) ([]model.Booking, error) {
 
 func (s *service) IsSeatAvailable(movieID int64, seatID int64) (bool, string, error) {
 
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
 	var booking *model.Booking
 
 	key := fmt.Sprintf("booking:%d:%d", movieID, seatID)
 
-	if err := memory_storage.GetData(key, &booking); err != nil {
+	if err := memory_storage.GetData(ctx, key, &booking); err != nil {
 		return false, "Redis Error", err
 	}
 
