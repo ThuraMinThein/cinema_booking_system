@@ -14,6 +14,7 @@ var rdb *redis.Client
 func InitRedis() error {
 
 	rdb = redis.NewClient(&redis.Options{
+		PoolSize: 100,
 		Addr:     config.Config.RedisURL,
 		Username: config.Config.RedisUsername,
 		Password: config.Config.RedisPassword,

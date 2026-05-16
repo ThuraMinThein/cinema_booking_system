@@ -1,0 +1,1 @@
+ALTER TABLE "bookings" ADD COLUMN "status" VARCHAR(255);

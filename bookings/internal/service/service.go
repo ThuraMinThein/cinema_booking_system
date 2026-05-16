@@ -11,6 +11,7 @@ import (
 	"github.com/ThuraMinThein/bookings/internal/repository"
 	"github.com/ThuraMinThein/bookings/pkg/memory_storage"
 	"github.com/ThuraMinThein/common/api"
+	"golang.org/x/sync/errgroup"
 )
 
 type service struct {
@@ -28,49 +29,53 @@ func NewService(repo *repository.Repository, userGrpcConnection api.UserServiceC
 }
 
 func (s *service) Create(request *api.CreateRequest) error {
-
-	gRPCCtx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	redisCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var bookings []*model.Booking
-
-	user, err := s.userGrpcConnection.GetUserById(
-		gRPCCtx,
-		&api.GetUserByIdRequest{
-			UserId: request.UserId,
-		},
+	var (
+		bookings []*model.Booking
+		mu       sync.Mutex
 	)
 
-	if err != nil {
+	g, ctx := errgroup.WithContext(redisCtx)
+
+	for _, seatID := range request.SeatIds {
+		seatID := seatID
+
+		g.Go(func() error {
+			var booking *model.Booking
+
+			key := fmt.Sprintf(
+				"booking:%d:%d",
+				request.MovieId,
+				seatID,
+			)
+
+			if err := memory_storage.GetData(ctx, key, &booking); err != nil {
+				return err
+			}
+
+			if booking == nil {
+				return errors.New("hold a seat first")
+			}
+
+			if booking.UserID != request.UserId {
+				return errors.New("this seat is held by someone else")
+			}
+
+			booking.Status = "Booked"
+			mu.Lock()
+			bookings = append(bookings, booking)
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
 		return err
 	}
 
-	for book := range request.SeatIds {
-
-		seat, err := s.seatGrpcConnection.GetOneSeat(gRPCCtx, &api.GetOneSeatRequest{SeatId: request.SeatIds[book]})
-		if err != nil {
-			return err
-		}
-
-		isAvailable, message, err := s.IsSeatAvailable(request.MovieId, request.SeatIds[book])
-
-		if err != nil {
-			return err
-		}
-
-		if !isAvailable {
-			return errors.New("Seat is already " + message)
-		}
-
-		bookings = append(bookings, &model.Booking{
-			UserID:     request.UserId,
-			UserName:   user.User.Name,
-			MovieID:    request.MovieId,
-			SeatID:     request.SeatIds[book],
-			SeatNumber: seat.Seat.Name,
-			Showtime:   time.Now().Add(2 * 24 * time.Hour),
-		})
-	}
 	return s.repository.Create(bookings)
 }
 
@@ -129,6 +134,7 @@ func (s *service) HoldBooking(request *api.HoldBookingRequest) error {
 		MovieID:    request.MovieId,
 		SeatID:     request.SeatId,
 		SeatNumber: seat.Seat.Name,
+		Status:     "Hold",
 		Showtime:   time.Now(),
 	}
 
@@ -179,14 +185,6 @@ func (s *service) FindAllBookedSeats(movieId int64) ([]model.Booking, error) {
 	redisBookings, err := memory_storage.GetMovieBookings(ctx, movieId)
 	if err != nil {
 		return nil, err
-	}
-
-	for i := range dbBookings {
-		dbBookings[i].Status = "Booked"
-	}
-
-	for i := range redisBookings {
-		redisBookings[i].Status = "Held"
 	}
 
 	allBookings := append(dbBookings, redisBookings...)
