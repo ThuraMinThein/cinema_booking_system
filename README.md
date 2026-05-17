@@ -413,6 +413,16 @@ cd <service> && go run cmd/main.go
 
 ---
 
+#### Create Booking — `POST /bookings` *(16 May 2026)*
+
+**Improvement: 5 - 8 s → 1.5 - 2 s average response time**
+
+| Technique | Details |
+|---|---|
+| **Parallel gRPC requests** | Executed seat-service gRPC calls concurrently using goroutines and sync.WaitGroup to reduce total request latency |
+
+---
+
 ## License
 
 This project is intended for educational and training purposes.
