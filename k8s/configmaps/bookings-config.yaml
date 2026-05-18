@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookings-config
+  namespace: cinema-booking
+  labels:
+    app: bookings
+data:
+  PORT: "50052"
+  ENVIRONMENT: "production"
+  GIN_MODE: "release"
+  DOMAIN: "localhost"
+  DATABASE_HOST: "your-neon-bookings-host.neon.tech"
+  DATABASE_PORT: "5432"
+  DATABASE_USERNAME: "neondb_owner"
+  DATABASE_NAME: "booking_service"
+  USERS_SERVICE_ADDRESS: "users-svc:50051"
+  BOOKINGS_SERVICE_ADDRESS: "bookings-svc:50052"
+  SEATS_SERVICE_ADDRESS: "seats-svc:50053"
+  REDIS_URL: "your-redis-host:port"
+  REDIS_USERNAME: "default"
+  REDIS_DB: "0"

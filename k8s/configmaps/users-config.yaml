@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: users-config
+  namespace: cinema-booking
+  labels:
+    app: users
+data:
+  PORT: "50051"
+  ENVIRONMENT: "production"
+  GIN_MODE: "release"
+  DOMAIN: "localhost"
+  DATABASE_HOST: "your-neon-users-host.neon.tech"
+  DATABASE_PORT: "5432"
+  DATABASE_USERNAME: "neondb_owner"
+  DATABASE_NAME: "user_service"

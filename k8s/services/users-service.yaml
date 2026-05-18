@@ -1,0 +1,17 @@
+# Users — ClusterIP Service (internal gRPC traffic only)
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-svc
+  namespace: cinema-booking
+  labels:
+    app: users
+spec:
+  type: ClusterIP
+  selector:
+    app: users
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+      protocol: TCP

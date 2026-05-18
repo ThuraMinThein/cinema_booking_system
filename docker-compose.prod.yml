@@ -1,0 +1,38 @@
+# docker-compose.prod.yml  — Production override
+# Pulls pre-built images from Docker Hub instead of building locally.
+# Combine with base compose:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Required env var:
+#   DOCKER_IMAGE_TAG  (e.g. latest, v1.2.3, or a git SHA)
+
+name: cinema-booking
+
+services:
+  users:
+    image: ${DOCKERHUB_USERNAME}/cinema-users:${DOCKER_IMAGE_TAG:-latest}
+    build: !reset null
+    environment:
+      ENVIRONMENT: production
+      GIN_MODE: release
+
+  bookings:
+    image: ${DOCKERHUB_USERNAME}/cinema-bookings:${DOCKER_IMAGE_TAG:-latest}
+    build: !reset null
+    environment:
+      ENVIRONMENT: production
+      GIN_MODE: release
+
+  seats:
+    image: ${DOCKERHUB_USERNAME}/cinema-seats:${DOCKER_IMAGE_TAG:-latest}
+    build: !reset null
+    environment:
+      ENVIRONMENT: production
+      GIN_MODE: release
+
+  gateway:
+    image: ${DOCKERHUB_USERNAME}/cinema-gateway:${DOCKER_IMAGE_TAG:-latest}
+    build: !reset null
+    environment:
+      ENVIRONMENT: production
+      GIN_MODE: release

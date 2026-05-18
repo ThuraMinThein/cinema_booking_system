@@ -1,0 +1,6 @@
+tmp/
+.air.toml
+*.md
+.env
+.env.*
+!.env.example

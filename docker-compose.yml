@@ -1,0 +1,159 @@
+# docker-compose.yml  — Local Development
+# All services use their local .env files and build from source.
+# gRPC service names are used as hostnames within the Docker network.
+#
+# Usage:
+#   docker compose up --build          # start all services
+#   docker compose up --build gateway  # start only gateway
+
+name: cinema-booking
+
+networks:
+  cinema-net:
+    driver: bridge
+
+services:
+  # ──────────────────────────────────────────
+  # Users  (gRPC :50051)
+  # ──────────────────────────────────────────
+  users:
+    build:
+      context: .
+      dockerfile: users/Dockerfile
+    container_name: cinema-users
+    restart: unless-stopped
+    networks:
+      - cinema-net
+    ports:
+      - "50051:50051"
+    environment:
+      ENVIRONMENT: development
+      PORT: "50051"
+      GIN_MODE: debug
+      DATABASE_HOST: ${USERS_DB_HOST}
+      DATABASE_PORT: ${USERS_DB_PORT:-5432}
+      DATABASE_USERNAME: ${USERS_DB_USER}
+      DATABASE_PASSWORD: ${USERS_DB_PASSWORD}
+      DATABASE_NAME: ${USERS_DB_NAME}
+      DOMAIN: localhost
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50051"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ──────────────────────────────────────────
+  # Bookings  (gRPC :50052)
+  # ──────────────────────────────────────────
+  bookings:
+    build:
+      context: .
+      dockerfile: bookings/Dockerfile
+    container_name: cinema-bookings
+    restart: unless-stopped
+    networks:
+      - cinema-net
+    ports:
+      - "50052:50052"
+    environment:
+      ENVIRONMENT: development
+      PORT: "50052"
+      GIN_MODE: debug
+      DATABASE_HOST: ${BOOKINGS_DB_HOST}
+      DATABASE_PORT: ${BOOKINGS_DB_PORT:-5432}
+      DATABASE_USERNAME: ${BOOKINGS_DB_USER}
+      DATABASE_PASSWORD: ${BOOKINGS_DB_PASSWORD}
+      DATABASE_NAME: ${BOOKINGS_DB_NAME}
+      USERS_SERVICE_ADDRESS: users:50051
+      SEATS_SERVICE_ADDRESS: seats:50053
+      BOOKINGS_SERVICE_ADDRESS: bookings:50052
+      REDIS_URL: ${REDIS_URL}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: ${REDIS_DB:-0}
+      DOMAIN: localhost
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      users:
+        condition: service_healthy
+      seats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50052"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ──────────────────────────────────────────
+  # Seats  (gRPC :50053)
+  # ──────────────────────────────────────────
+  seats:
+    build:
+      context: .
+      dockerfile: seats/Dockerfile
+    container_name: cinema-seats
+    restart: unless-stopped
+    networks:
+      - cinema-net
+    ports:
+      - "50053:50053"
+    environment:
+      ENVIRONMENT: development
+      PORT: "50053"
+      GIN_MODE: debug
+      DATABASE_HOST: ${SEATS_DB_HOST}
+      DATABASE_PORT: ${SEATS_DB_PORT:-5432}
+      DATABASE_USERNAME: ${SEATS_DB_USER}
+      DATABASE_PASSWORD: ${SEATS_DB_PASSWORD}
+      DATABASE_NAME: ${SEATS_DB_NAME}
+      DOMAIN: localhost
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50053"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ──────────────────────────────────────────
+  # Gateway  (HTTP :3333)
+  # ──────────────────────────────────────────
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: cinema-gateway
+    restart: unless-stopped
+    networks:
+      - cinema-net
+    ports:
+      - "3333:3333"
+    environment:
+      ENVIRONMENT: development
+      PORT: "3333"
+      GIN_MODE: debug
+      USERS_SERVICE_ADDRESS: users:50051
+      BOOKINGS_SERVICE_ADDRESS: bookings:50052
+      SEATS_SERVICE_ADDRESS: seats:50053
+      REDIS_URL: ${REDIS_URL}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_DB: ${REDIS_DB:-0}
+      DOMAIN: localhost
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      users:
+        condition: service_healthy
+      bookings:
+        condition: service_healthy
+      seats:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3333/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

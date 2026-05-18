@@ -1,7 +1,27 @@
 
+# ── Environment files (never commit real credentials) ─────────────────────────
 .env
+.env.*
+!.env.example
 
+# ── Service tmp (hot-reload) directories ──────────────────────────────────────
 gateway/tmp/
 users/tmp/
 seats/tmp/
 bookings/tmp/
+
+# ── Kubernetes populated secrets (only example files are committed) ────────────
+k8s/secrets/secrets.yaml
+
+# ── Docker build cache ────────────────────────────────────────────────────────
+.dockerenv
+
+# ── Go build artefacts ────────────────────────────────────────────────────────
+bin/
+*.test
+*.out
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp

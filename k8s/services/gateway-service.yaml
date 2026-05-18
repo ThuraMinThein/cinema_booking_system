@@ -1,0 +1,17 @@
+# Gateway — LoadBalancer Service (HTTP traffic from outside)
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-svc
+  namespace: cinema-booking
+  labels:
+    app: gateway
+spec:
+  type: LoadBalancer
+  selector:
+    app: gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3333
+      protocol: TCP
